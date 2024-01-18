@@ -156,6 +156,9 @@ class PXI_5142:
         self.__close_com()
         if self.log:
             self.logger.info("Object Deleted")
+    def trigger(self):
+        # self.instr.channels[0].configure_trigger_immediate()
+        self.instr.configure_trigger_software(holdoff=0, delay=0)
         
     
 
@@ -193,11 +196,15 @@ if __name__ == '__main__':
     nr_of_periods = 10
     num_records = 100
     #amplitude_to_meas is the peak voltage (not peak to peak)
-    sc0.configure_simple_ac(amplitude_to_meas=1.1, freq_to_meas=10e3, nr_of_periods=3, num_records=1, sample_rate=10e6,hysteresis=None)
-    
-    
-    sc0.wait_until_acquisition_done(1)
-    
+    if 0:
+        sc0.configure_simple_ac(amplitude_to_meas=1.1, freq_to_meas=10e3, nr_of_periods=3, num_records=1, sample_rate=10e6,hysteresis=None)
+        
+        
+        sc0.wait_until_acquisition_done(1)
+    sc0.configure_vertical(channel_nr=0, vrange=0.2, coupling='AC', offset=0, probe_attenuation=1.0, enabled=True)
+    sc0.trigger()
+    # sc0.configure_trigger_immediate() #https://nimi-python.readthedocs.io/en/1.2.1/niscope/class.html
+    sc0.wait_until_acquisition_done(2)
     record_number = 0
     [t, waveform] = sc0.measure(channel_nr=0, record_number=record_number)
     plt.plot(t, waveform)
