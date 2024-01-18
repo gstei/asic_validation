@@ -1,0 +1,25 @@
+name: Pylint
+
+on: [push]
+
+jobs:
+  example-3:
+    name: Ex3 Linux
+    runs-on: "ubuntu-latest"
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          channels: bioconda, conda-forge, defaults
+          activate-environment: asic_validation
+          environment-file: environment2.yml
+          python-version: 3.10
+          auto-activate-base: false
+      - run: |
+          conda info
+          conda list
+      - run: |
+          pylint $(git ls-files '*.py')
