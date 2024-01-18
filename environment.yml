@@ -1,0 +1,7 @@
+name: asic_validation
+channels:
+  - defaults
+dependencies:
+  - conda-forge::nidaqmx-python
+  - matplotlib
+prefix: C:\tools\miniconda3\envs\asic_validation
