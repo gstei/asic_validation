@@ -25,6 +25,7 @@ jobs:
         conda install conda-forge::pylint
         conda install matplotlib
         conda install numpy
+        conda install conda-forge::pyvisa
     - name: Lint with flake8
       run: |
         conda install flake8
