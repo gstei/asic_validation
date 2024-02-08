@@ -14,8 +14,8 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           channels: conda-forge,defaults
-          activate-environment: anaconda-client-env
-          environment-file: etc/example-environment.yml
+          activate-environment: asic_validation
+          environment-file: etc/environment2.yml
           python-version: 3.5
           condarc-file: etc/example-condarc.yml
           auto-activate-base: false
