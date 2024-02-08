@@ -5,11 +5,15 @@ on: [push]
 jobs:
   build-linux:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       max-parallel: 5
     steps:
       - uses: conda-incubator/setup-miniconda@v3
         with:
+          channels: bioconda, conda-forge, defaults
           activate-environment: asic_validation
           environment-file: environment2.yml
           auto-activate-base: false
