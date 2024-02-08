@@ -38,7 +38,7 @@ logger.addHandler(fh)
 logger.info("Log File created")
 
 # setupt smu
-if 0:
+if 1:
     smu0 = PXIe4141('PXI2Slot3', name = 'smu', selftest=True,reset=True,log=True)
 
     smu0.set_aperture(1, 0.001, 2)
@@ -70,14 +70,15 @@ if 0:
 
 
 #power supply
-if 0:
+if 1:
     PS = E3631A(address=5)
 
     PS.set_6V(2,0.4)
     PS.set_P25V(5)
     PS.set_N25V(-3)
+    PS.en_output()
 
-if 1: 
+if 0: 
     import matplotlib.pyplot as plt
     
     sc0 = PXI_5142('PXI2Slot7', name = 'scope', selftest=True, reset=True, log=True)
@@ -87,21 +88,21 @@ if 1:
     nr_of_periods = 10
     num_records = 100
     #amplitude_to_meas is the peak voltage (not peak to peak)
-    sc0.configure_simple_ac(amplitude_to_meas=1.1, freq_to_meas=10e3, nr_of_periods=3, num_records=1, sample_rate=10e6,hysteresis=None)
+    # sc0.configure_simple_ac(amplitude_to_meas=1.1, freq_to_meas=10e3, nr_of_periods=3, num_records=1, sample_rate=10e6,hysteresis=None)
     
     
-    sc0.wait_until_acquisition_done(1)
+    # sc0.wait_until_acquisition_done(1)
     
-    record_number = 0
-    [t, waveform] = sc0.measure(channel_nr=0, record_number=record_number)
-    plt.plot(t, waveform)
-    plt.grid()
-    plt.show()
+    # record_number = 0
+    # [t, waveform] = sc0.measure(channel_nr=0, record_number=record_number)
+    # plt.plot(t, waveform)
+    # plt.grid()
+    # plt.show()
 
 
 
 
-PS.en_output()
+
 time.sleep(1)
 
 
