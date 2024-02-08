@@ -21,7 +21,7 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda env create --file environment2.yml --name asic_validation
+        conda install conda-forge::nidaqmx-python
     - name: Lint with flake8
       run: |
         conda install flake8
