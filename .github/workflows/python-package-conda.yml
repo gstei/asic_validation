@@ -15,8 +15,8 @@ jobs:
         with:
           channels: conda-forge,defaults
           activate-environment: asic_validation
-          environment-file: etc/environment2.yml
-          python-version: 3.5
+          environment-file: environment2.yml
+          python-version: 3.9
           condarc-file: etc/example-condarc.yml
           auto-activate-base: false
       - run: |
