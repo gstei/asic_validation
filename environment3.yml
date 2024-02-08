@@ -70,5 +70,4 @@ dependencies:
   - libclang13==14.0.6=default_h8e68704_1
   - icu==73.1=h6c2663c_0
   - conda-forge::pyvisa-py
-  - pylint
 prefix: C:\Users\IMES-PXI\.conda\envs\asic_validation

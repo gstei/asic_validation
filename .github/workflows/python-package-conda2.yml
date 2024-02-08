@@ -22,10 +22,11 @@ jobs:
     - name: Install dependencies
       run: |
         conda install conda-forge::nidaqmx-python -y
-        conda install conda-forge::pylint -y
         conda install matplotlib -y
         conda install numpy -y
         conda install conda-forge::pyvisa -y
+        conda install pip -y
+        pip install pylint
     - name: Lint with flake8
       run: |
         conda install flake8
@@ -38,4 +39,4 @@ jobs:
         conda info
     - name: pylint test
       run: |
-        pylint $(git ls-files '*.py' | grep -v 'Drivers/*') --threshold=6
+        pylint --fail-under=6 $(git ls-files '*.py' | grep -v 'Drivers/*')
