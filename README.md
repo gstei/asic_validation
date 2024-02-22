@@ -18,7 +18,9 @@ Delete environment\
 
 Link to [Conda](https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#activating-an-environment)
 
-Shomehow 'pylint' from conda does not work therefore one has to install it manually ```pip install pylint```.
+Shomehow 'pylint' from conda does not work therefore one has to install it manually \
+```pip install pylint```\
+```pip install nifgen```
 
 ## NI-PXI system
 Username: &ensp; .\IMES-PXI \

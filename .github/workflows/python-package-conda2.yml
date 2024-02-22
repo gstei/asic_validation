@@ -39,4 +39,5 @@ jobs:
         conda info
     - name: pylint test
       run: |
-        pylint --fail-under=6 $(git ls-files '*.py' | grep -v 'Drivers/*')
+        for file in $(git ls-files '*.py' ':!Drivers/*'); do
+          pylint "$file" --fail-under=6.0; done

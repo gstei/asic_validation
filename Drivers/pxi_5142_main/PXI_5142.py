@@ -126,7 +126,7 @@ class PXI_5142:
                                                    timeout=timeout)
         return [time, waveform]
 
-    def configure_simple_ac(self, amplitude_to_meas:float, freq_to_meas:float, nr_of_periods:int, num_records:int, sample_rate:float,trigger=0,hysteresis=None):
+    def configure_simple_ac(self, amplitude_to_meas:float, freq_to_meas:float, nr_of_periods:int, num_records:int, sample_rate:float,trigger=0,hysteresis=None,triggerlevel=0):
         if type(amplitude_to_meas) == list:
             vrange0 = amplitude_to_meas[0]
             vrange1 = amplitude_to_meas[1]
@@ -141,7 +141,7 @@ class PXI_5142:
         self.configure_horizontal(min_sample_rate=sample_rate, min_num_pts=num_pts, num_records=num_records)
         self.configure_chan_characteristics(channel_nr=0, input_impedance=1000000.0, max_input_frequency=100e3) #self.NISCOPE_VAL_20MHZ_MAX_INPUT_FREQUENCY
         self.configure_chan_characteristics(channel_nr=1, input_impedance=1000000.0, max_input_frequency=100e3)
-        self.configure_trigger_edge(trigger_source_channel_nr=trigger, trigger_coupling='DC', level=0, slope='POSITIVE')
+        self.configure_trigger_edge(trigger_source_channel_nr=trigger, trigger_coupling='DC', level=triggerlevel, slope='POSITIVE')
         trigger_source = self.addr + '/' + str(trigger)
         if hysteresis != None:
             self.instr.configure_trigger_hysteresis(trigger_source=trigger_source,level=0,hysteresis=hysteresis,trigger_coupling=niscope.TriggerCoupling['DC'])
@@ -160,7 +160,7 @@ class PXI_5142:
         # self.instr.channels[0].configure_trigger_immediate()
         self.instr.configure_trigger_software(holdoff=0, delay=0)
         
-    
+
 
 if __name__ == '__main__':
     import logging
@@ -168,7 +168,7 @@ if __name__ == '__main__':
     logger = logging.getLogger('') # Logger is labled as root
     logger.setLevel(logging.INFO)
 
-    # Add File to Logger 
+    # Add File to Logger
     fh = logging.FileHandler('TestLog.log','w')
     fh.setLevel(logging.INFO)
 
