@@ -1,19 +1,12 @@
-2024-02-08 13:44:26,347 - root - Log File created
-2024-02-08 13:44:26,347 - SMU - SMU Object created
-2024-02-08 13:44:26,939 - SMU - Selftest passed
-2024-02-08 13:44:37,092 - SMU - Device reseted
-2024-02-08 13:44:37,100 - SMU - Channel 1 was enabled
-2024-02-08 13:44:37,181 - SMU - Measure: Ch1, V=1.0000V, I=-0.0000A, R=-8644797.0120Ohm, P=-0.0000W: mode=VDC
-2024-02-08 13:44:37,265 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-17602078.8343Ohm, P=-0.0000W: mode=VDC
-2024-02-08 13:44:37,347 - SMU - Measure: Ch1, V=3.0000V, I=-0.0000A, R=-26988479.7293Ohm, P=-0.0000W: mode=VDC
-2024-02-08 13:44:37,348 - SMU - Channel 1 was disabled
-2024-02-08 13:44:37,357 - SMU - Channel 0 was enabled
-2024-02-08 13:44:37,358 - SMU - Channel 1 was enabled
-2024-02-08 13:44:37,439 - SMU - Measure: Ch0, V=1.0000V, I=0.0000A, R=188580385.3574Ohm, P=0.0000W: mode=VDC
-2024-02-08 13:44:37,521 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-17602078.8343Ohm, P=-0.0000W: mode=IDC
-2024-02-08 13:44:37,522 - SMU - Output is tripped!
-2024-02-08 13:44:37,605 - SMU - Measure: Ch0, V=2.0000V, I=0.0000A, R=326441100.4486Ohm, P=0.0000W: mode=VDC
-2024-02-08 13:44:37,687 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-17860326.7561Ohm, P=-0.0000W: mode=IDC
-2024-02-08 13:44:37,687 - SMU - Output is tripped!
-2024-02-08 13:44:37,688 - SMU - Channel 0 was disabled
-2024-02-08 13:44:37,688 - SMU - Channel 1 was disabled
+2024-02-29 12:00:08,871 - root - Log File created
+2024-02-29 12:00:15,213 - Scope - Scope Object created
+2024-02-29 12:00:15,447 - Scope - Selftest passed
+2024-02-29 12:00:16,017 - Scope - Device reseted
+2024-02-29 12:00:16,018 - Scope - Scope Object created
+2024-02-29 12:00:16,289 - Scope - Selftest passed
+2024-02-29 12:00:21,923 - Scope - Device reseted
+2024-02-29 12:00:21,923 - SMU - SMU Object created
+2024-02-29 12:00:22,171 - SMU - Selftest passed
+2024-02-29 12:00:32,294 - SMU - Device reseted
+2024-02-29 12:00:32,323 - SMU - Channel 0 was enabled
+2024-02-29 12:00:33,363 - SMU - Measure: Ch0, V=1.0000V, I=-0.0000A, R=-72401670.0493Ohm, P=-0.0000W: mode=VDC

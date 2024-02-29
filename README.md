@@ -7,7 +7,7 @@ Install single driver\
 ```conda install conda-forge::nidaqmx-python```
 
 Export Environment\
-```conda env export --from-history > environment.yml```
+```conda env export -n asic_validation_2 > environment.yml```
 
 Create environment\
 ```conda env create -f environment.yml```
@@ -26,3 +26,13 @@ Shomehow 'pylint' from conda does not work therefore one has to install it manua
 Username: &ensp; .\IMES-PXI \
 Password: &ensp; IMES\
 IP-Address: &ensp; 152.96.172.31
+
+##Others
+
+```
+conda install matplotlib -y
+conda install -c conda-forge pyvisa -y
+pip install niscope
+pip install nifgen
+pip install pylint
+```

@@ -157,8 +157,23 @@ class PXI_5142:
         if self.log:
             self.logger.info("Object Deleted")
     def trigger(self):
-        # self.instr.channels[0].configure_trigger_immediate()
-        self.instr.configure_trigger_software(holdoff=0, delay=0)
+        self.instr.channels[0].configure_trigger_immediate()
+        # self.instr.configure_trigger_software(holdoff=0, delay=0)
+    def get_some_data(self, probe_attenuation1=1, probe_attenuation2=1):
+        self.configure_vertical(channel_nr=0, vrange=4, coupling='DC', offset=1, probe_attenuation=probe_attenuation1, enabled=True)
+        self.configure_vertical(channel_nr=1, vrange=4, coupling='DC', offset=1, probe_attenuation=probe_attenuation2, enabled=True)
+        # self.configure_vertical(channel_nr=2, vrange=5, coupling='AC', offset=0, probe_attenuation=1.0, enabled=True)
+        delta_t=3e-3
+        num_samples=1000
+        horz_sample_rate=1/(delta_t/num_samples)
+        dt = 1/horz_sample_rate
+        t_min = -num_samples/2*dt
+        t_max = num_samples/2*dt
+        time = np.linspace(t_min, t_max, num=num_samples)
+        self.instr.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=0.0, num_records=1, enforce_realtime=True)
+        waveforms0 = self.instr.channels[0].read(num_samples=1000)
+        waveforms1 = self.instr.channels[1].read(num_samples=1000)
+        return [time, np.array([waveforms0[0].samples.obj, waveforms1[0].samples.obj])]
         
 
 
@@ -189,7 +204,7 @@ if __name__ == '__main__':
 
     import matplotlib.pyplot as plt
     
-    sc0 = PXI_5142('PXI2Slot7', name = 'scope', selftest=True, reset=True, log=True)
+    sc0 = PXI_5142('PXI2Slot8', name = 'scope', selftest=True, reset=True, log=True)
     
     vrange = 2.0
     freq_to_meas = 1000
