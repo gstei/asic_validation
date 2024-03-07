@@ -16,7 +16,7 @@ import numpy as np
 import math
 import hightime
 import time
-
+from PlotData import PlotData
 
 class PXI_5142:
     
@@ -174,7 +174,155 @@ class PXI_5142:
         waveforms0 = self.instr.channels[0].read(num_samples=1000)
         waveforms1 = self.instr.channels[1].read(num_samples=1000)
         return [time, np.array([waveforms0[0].samples.obj, waveforms1[0].samples.obj])]
-        
+    @staticmethod
+    
+    def get_data(sc0, sc1, delta_t=100e-3, num_samples=20000, trigger_level=0.1, 
+                 trigger_slope='POSITIVE', trigger_source_channel_nr=0) -> PlotData:
+        """
+        Acquires waveform data from two scopes and returns a PlotData object.
+
+        Parameters:
+        - sc0 (object): PXI Ni-scope 1 (On this scope on channel 0 is the trigger).
+        - sc1 (object): PXI Ni-scope 2 (This scope triggers simultaneously to the previous one).
+        - delta_t: The time interval between samples in seconds. Default is 100ms.
+        - num_samples: The number of samples to acquire. Default is 20000.
+        - trigger_level: The trigger level in volts. Default is 0.1V.
+        - trigger_slope: The trigger slope. Default is 'POSITIVE'.
+        - trigger_source_channel_nr: The channel number to use as the trigger source. Default is 0.
+
+        Returns:
+        - plot_data: A PlotData object containing the acquired waveform data.
+
+        Note:
+        - This function configures the scopes, sets the trigger settings, initiates the acquisition,
+          waits for the scope to trigger, and fetches the waveform data from each channel of both scopes.
+        - The acquired waveform data is stored in a PlotData object for easy plotting.
+
+        """
+
+        # Check if the acquisition is in progress and abort it if it is.
+        if sc0.instr.acquisition_status().name=="IN_PROGRESS":
+            sc0.instr.abort()
+            sc1.instr.abort()
+        # calculate the sample rate
+        horz_sample_rate=1/(delta_t/num_samples)
+        dt=1/horz_sample_rate
+        t_min = -num_samples/2*dt
+        t_max = num_samples/2*dt
+        # create the time vector
+        time_t = np.linspace(t_min, t_max, num=num_samples)
+        # create list of scopes
+        session_list=[sc0.instr, sc1.instr]
+        # set the vertical and horizontal settings for each scope
+        for session in session_list:
+            session.configure_vertical(range=5.0, coupling=niscope.VerticalCoupling.DC, probe_attenuation=10.0)
+            session.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=50.0, num_records=1, enforce_realtime=True)
+
+        # sc0.instr.configure_trigger_immediate()
+        # configure the trigger settings for the first scope
+        sc0.configure_trigger_edge(trigger_source_channel_nr=trigger_source_channel_nr, trigger_coupling='DC', level=trigger_level, slope=trigger_slope)
+        # export the trigger from the first scope to the second scope (add trigger on pxi line 1)
+        sc0.instr.exported_ref_trigger_output_terminal="PXI_Trig1"
+        # set trigger of second scope to the exported trigger
+        sc1.instr.configure_trigger_digital(trigger_source="PXI_Trig1")
+
+        # initiate the acquisition
+        sc1.instr.initiate()
+        sc0.instr.initiate()
+        # wait to be sure that the scope has triggered
+        sc0.wait_until_acquisition_done(20)
+        if sc1.instr.acquisition_status().name=="IN_PROGRESS":
+            print("Something went wrong ==> most probably the scope did not trigger")
+        #get the waveform data.
+        waveforms1 = sc0.instr.channels[0].fetch(num_samples=num_samples)
+        waveforms2 = sc0.instr.channels[1].fetch(num_samples=num_samples)
+        waveforms3 = sc1.instr.channels[0].fetch(num_samples=num_samples)
+        waveforms4 = sc1.instr.channels[1].fetch(num_samples=num_samples)
+        waveform1= np.array(waveforms1[0].samples.obj)
+        waveform2= np.array(waveforms2[0].samples.obj)
+        waveform3= np.array(waveforms3[0].samples.obj)
+        waveform4= np.array(waveforms4[0].samples.obj)
+
+        plot_data = plot_data()
+        plot_data.add_data(time_t, waveform1, label="sc0 channel 0")
+        plot_data.add_data(time_t, waveform2, label="sc0 channel 1")
+        plot_data.add_data(time_t, waveform3, label="sc1 channel 0")
+        plot_data.add_data(time_t, waveform4, label="sc1 channel 1")
+        return plot_data
+    
+    def get_data2(sc0, sc1, delta_t=100e-3, num_samples=20000, trigger_level=0.1, 
+                 trigger_slope='POSITIVE', trigger_source_channel_nr=0, 
+                 labels=["Voltage input", "Voltage Output", "Current Input", "Current Output"]) -> PlotData:
+        """
+        Acquires waveform data from two scopes and returns a PlotData object. In this method one has a on sc0 the voltage and on sc1 the current
+
+        Parameters:
+        - sc0 (object): PXI Ni-scope 1 (On this scope on channel 0 is the trigger).
+        - sc1 (object): PXI Ni-scope 2 (This scope triggers simultaneously to the previous one).
+        - delta_t: The time interval between samples in seconds. Default is 100ms.
+        - num_samples: The number of samples to acquire. Default is 20000.
+        - trigger_level: The trigger level in volts. Default is 0.1V.
+        - trigger_slope: The trigger slope. Default is 'POSITIVE'.
+        - trigger_source_channel_nr: The channel number to use as the trigger source. Default is 0.
+
+        Returns:
+        - plot_data: A PlotData object containing the acquired waveform data.
+
+        Note:
+        - This function configures the scopes, sets the trigger settings, initiates the acquisition,
+          waits for the scope to trigger, and fetches the waveform data from each channel of both scopes.
+        - The acquired waveform data is stored in a PlotData object for easy plotting.
+
+        """
+
+        # Check if the acquisition is in progress and abort it if it is.
+        if sc0.instr.acquisition_status().name=="IN_PROGRESS":
+            sc0.instr.abort()
+            sc1.instr.abort()
+        # calculate the sample rate
+        horz_sample_rate=1/(delta_t/num_samples)
+        dt=1/horz_sample_rate
+        t_min = -num_samples/2*dt
+        t_max = num_samples/2*dt
+        # create the time vector
+        time_t = np.linspace(t_min, t_max, num=num_samples)
+        # create list of scopes
+        session_list=[sc0.instr, sc1.instr]
+        # set the vertical and horizontal settings for each scope
+        for session in session_list:
+            session.configure_vertical(range=6.0, coupling=niscope.VerticalCoupling.DC, probe_attenuation=10.0)
+            session.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=50.0, num_records=1, enforce_realtime=True)
+
+        # configure the trigger settings for the first scope
+        sc0.configure_trigger_edge(trigger_source_channel_nr=trigger_source_channel_nr, trigger_coupling='DC', level=trigger_level, slope=trigger_slope)
+        # export the trigger from the first scope to the second scope (add trigger on pxi line 1)
+        sc0.instr.exported_ref_trigger_output_terminal="PXI_Trig1"
+        # set trigger of second scope to the exported trigger
+        sc1.instr.configure_trigger_digital(trigger_source="PXI_Trig1")
+
+        # initiate the acquisition
+        sc1.instr.initiate()
+        sc0.instr.initiate()
+        # wait to be sure that the scope has triggered
+        sc0.wait_until_acquisition_done(20)
+        if sc1.instr.acquisition_status().name=="IN_PROGRESS":
+            print("Something went wrong ==> most probably the scope did not trigger")
+        #get the waveform data.
+        waveforms1 = sc0.instr.channels[0].fetch(num_samples=num_samples)
+        waveforms2 = sc0.instr.channels[1].fetch(num_samples=num_samples)
+        waveforms3 = sc1.instr.channels[0].fetch(num_samples=num_samples)
+        waveforms4 = sc1.instr.channels[1].fetch(num_samples=num_samples)
+        waveform1= np.array(waveforms1[0].samples.obj)
+        waveform2= np.array(waveforms2[0].samples.obj)
+        waveform3= np.array(waveforms3[0].samples.obj)
+        waveform4= np.array(waveforms4[0].samples.obj)
+
+        plot_data = PlotData()
+        plot_data.add_data(time_t, waveform1, label=labels[0])
+        plot_data.add_data(time_t, waveform2, label=labels[1])
+        plot_data.add_data2(time_t, waveform3, label=labels[2])
+        plot_data.add_data2(time_t, waveform4, label=labels[3])
+        return plot_data
 
 
 if __name__ == '__main__':

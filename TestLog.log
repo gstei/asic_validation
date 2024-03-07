@@ -1,12 +1,20 @@
-2024-02-29 12:00:08,871 - root - Log File created
-2024-02-29 12:00:15,213 - Scope - Scope Object created
-2024-02-29 12:00:15,447 - Scope - Selftest passed
-2024-02-29 12:00:16,017 - Scope - Device reseted
-2024-02-29 12:00:16,018 - Scope - Scope Object created
-2024-02-29 12:00:16,289 - Scope - Selftest passed
-2024-02-29 12:00:21,923 - Scope - Device reseted
-2024-02-29 12:00:21,923 - SMU - SMU Object created
-2024-02-29 12:00:22,171 - SMU - Selftest passed
-2024-02-29 12:00:32,294 - SMU - Device reseted
-2024-02-29 12:00:32,323 - SMU - Channel 0 was enabled
-2024-02-29 12:00:33,363 - SMU - Measure: Ch0, V=1.0000V, I=-0.0000A, R=-72401670.0493Ohm, P=-0.0000W: mode=VDC
+2024-03-07 09:06:20,670 - root - Log File created
+2024-03-07 09:06:20,673 - SMU - SMU Object created
+2024-03-07 09:06:21,247 - SMU - Selftest passed
+2024-03-07 09:06:31,389 - SMU - Device reseted
+2024-03-07 09:06:31,416 - SMU - Channel 0 was enabled
+2024-03-07 09:06:31,453 - SMU - Measure: Ch0, V=1.0000V, I=0.0000A, R=4957319.2028Ohm, P=0.0000W: mode=VDC
+2024-03-07 09:06:31,505 - SMU - Measure: Ch0, V=2.0000V, I=0.0000A, R=4844892.0955Ohm, P=0.0000W: mode=VDC
+2024-03-07 09:06:31,557 - SMU - Measure: Ch0, V=3.0000V, I=0.0000A, R=5011031.2892Ohm, P=0.0000W: mode=VDC
+2024-03-07 09:06:31,558 - SMU - Channel 0 was disabled
+2024-03-07 09:06:31,569 - SMU - Channel 0 was enabled
+2024-03-07 09:06:31,570 - SMU - Channel 1 was enabled
+2024-03-07 09:06:31,652 - SMU - Measure: Ch0, V=1.0000V, I=0.0000A, R=4885481.2741Ohm, P=0.0000W: mode=VDC
+2024-03-07 09:06:31,734 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-9726411.9816Ohm, P=-0.0000W: mode=IDC
+2024-03-07 09:06:31,734 - SMU - Output is tripped!
+2024-03-07 09:06:31,821 - SMU - Measure: Ch0, V=2.0000V, I=0.0000A, R=4959713.5884Ohm, P=0.0000W: mode=VDC
+2024-03-07 09:06:31,903 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-9765419.9059Ohm, P=-0.0000W: mode=IDC
+2024-03-07 09:06:31,904 - SMU - Output is tripped!
+2024-03-07 09:06:31,904 - SMU - Channel 0 was disabled
+2024-03-07 09:06:31,905 - SMU - Channel 1 was disabled
+2024-03-07 09:07:00,218 - SMU - Channel 0 was enabled

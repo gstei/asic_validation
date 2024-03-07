@@ -43,7 +43,18 @@ class PXIe4141:
         if self.log:
             self.logger.info("Device reseted")
         
-    def set_aperture(self, channel_nr: int, delay: float, aperture_plc: float): # plc=Power Line Cycles.
+    def set_aperture(self, channel_nr: int, delay: float, aperture_plc: float):
+        """
+        Sets the aperture time for a specific channel.
+
+        Args:
+            channel_nr (int): The channel number.
+            delay (float): The delay time in seconds.
+            aperture_plc (float): The aperture time in power line cycles (PLC).
+
+        Returns:
+            None
+        """
         self.instr.channels[channel_nr].abort()
         self.instr.channels[channel_nr].source_delay = delay
         self.instr.channels[channel_nr].configure_aperture_time(aperture_plc, nidcpower.ApertureTimeUnits.POWER_LINE_CYCLES)

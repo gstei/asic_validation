@@ -17,6 +17,8 @@ import nitclk
 
 import logging
 
+import PlotData
+
 logger = logging.getLogger('') # Logger is labled as root
 logger.setLevel(logging.INFO)
 
@@ -58,7 +60,7 @@ print("Make the following connections for the self test:\n"+
 
 # input("Press enter to continue")
 
-if 0:
+if 1:
     print("Initialize SMU")
     smu0 = PXIe4141('PXI2Slot3', name = 'smu', selftest=True,reset=True,log=True)
     print("Set speed of SMU channel")
@@ -154,119 +156,10 @@ if 1:
     if abs(1-smu0.measure(0)[0])>0.01:
         print("SMU does not work")
 
-    [t, waveform]= sc0.get_some_data(probe_attenuation1=1, probe_attenuation2=10)
-    
-    [t1, waveform1]= sc1.get_some_data(probe_attenuation1=10, probe_attenuation2=1)
-    
-    if sc0.instr.acquisition_status().name=="IN_PROGRESS":
-        sc0.instr.abort()
-        sc1.instr.abort()
-    def plot(sc0, sc1, delta_t=100e-3, num_samples=20000):
-        if sc0.instr.acquisition_status().name=="IN_PROGRESS":
-            sc0.instr.abort()
-            sc1.instr.abort()
-        time.sleep(1)
-        horz_sample_rate=1/(delta_t/num_samples)
-        t_min = -num_samples/2*delta_t
-        t_max = num_samples/2*delta_t
-        time_t = np.linspace(t_min, t_max, num=num_samples)
-        session_list=[sc0.instr, sc1.instr]
-        for session in session_list:
-            session.configure_vertical(range=5.0, coupling=niscope.VerticalCoupling.DC)
-            session.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=50.0, num_records=1, enforce_realtime=True)
-        # nitclk.configure_for_homogeneous_triggers(session_list)
-        # nitclk.synchronize(session_list, 1/horz_sample_rate) # must be in accordance with min sample rate
-        # nitclk.initiate(session_list)
-        # sc1.instr.trigger_type = niscope.TriggerType.SOFTWARE
-        # sc0.instr.configure_trigger_software(0,0) 
-        sc0.instr.configure_trigger_immediate()
-        sc0.configure_trigger_edge(trigger_source_channel_nr=0, trigger_coupling='DC', level=0.1, slope='POSITIVE')
-        sc0.instr.exported_ref_trigger_output_terminal="PXI_Trig1"
-        # sc1.instr.configure_trigger_digital(trigger_source="PXI2Slot8.PXI_Trig0")
-        sc1.instr.configure_trigger_digital(trigger_source="PXI_Trig1")
-
-        print(sc1.instr.acquisition_status().name)
-        sc1.instr.initiate()
-        print(sc1.instr.acquisition_status().name)
-        sc0.instr.initiate()
-        # sc0.instr.send_software_trigger_edge(niscope.WhichTrigger.START)
-        # print(sc0.instr.acquisition_status().name)
-        # sc0.instr.configure_trigger_digital("SOFTWARE")
-        
-        # sc0.instr.initiate()
-        print(sc1.instr.acquisition_status().name)
-        time.sleep(2)
-        if sc1.instr.acquisition_status().name=="IN_PROGRESS":
-            print("Something went wrong")
-        # time.sleep(2)
-        # print(sc1.instr.acquisition_status().name)
-        # sc0.instr.send_software_trigger_edge(niscope.WhichTrigger.START)
-        # delta_t=3e-3
-        # num_samples=1000
-        # horz_sample_rate=1/(delta_t/num_samples)
-        # sc1.instr.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=0.0, num_records=1, enforce_realtime=True)
-        # time.sleep(2)
-        # sc0.instr.send_software_trigger_edge(niscope.WhichTrigger.START)
-        waveforms1 = sc1.instr.channels[0].fetch(num_samples=num_samples)
-        waveforms2 = sc1.instr.channels[1].fetch(num_samples=num_samples)
-        waveforms3 = sc0.instr.channels[0].fetch(num_samples=num_samples)
-        waveforms4 = sc0.instr.channels[1].fetch(num_samples=num_samples)
-        waveform1= np.array(waveforms1[0].samples.obj)
-        waveform2= np.array(waveforms2[0].samples.obj)
-        waveform3= np.array(waveforms3[0].samples.obj)
-        waveform4= np.array(waveforms4[0].samples.obj)
-        plt.plot(time_t,waveform1, label="1")
-        plt.plot(time_t,waveform2, label="2")
-        plt.plot(time_t,waveform3, label="3")
-        plt.plot(time_t,waveform4, label="4")
-        plt.legend()
-        plt.show()
-    plot(sc0,sc1)
+    # Get some data from the Oscilloscope
+    PlotData = PXI_5142.get_data(sc0,sc1)
+    PlotData.plot_all_data()
     plt.close()
-    plot(sc0,sc1)
-    plt.close()
-    plt.plot(t, waveform[0], label = "OSC1")
-    plt.plot(t, waveform[1], label = "OSC2")
-    plt.grid()
-    plt.legend(title = "Legend Title") 
-    plt.title("Example") 
-    plt.show()
-    plt.close()
-
-    plt.plot(t1, waveform1[0], label = "OSC1")
-    plt.plot(t1, waveform1[1], label = "OSC2")
-    plt.grid()
-    plt.legend(title = "Legend Title") 
-    plt.title("Example") 
-    plt.show()
-    
-    vrange = 2.0
-    freq_to_meas = 1000
-    nr_of_periods = 10
-    #amplitude_to_meas is the peak voltage (not peak to peak)
-    if 1:
-        sc0.configure_simple_ac(amplitude_to_meas=1, freq_to_meas=1e3, nr_of_periods=2, num_records=1, sample_rate=10e3,hysteresis=None)
-        sc0.wait_until_acquisition_done(1)
-        [t, waveform] = sc0.measure(channel_nr=0, record_number=0)
-        plt.plot(t, waveform)
-        plt.grid()
-        plt.show()
-        input("On the signal generator one should know see the signal press enter to continue")
-    sc0.configure_vertical(channel_nr=0, vrange=0.2, coupling='AC', offset=0, probe_attenuation=1.0, enabled=True)
-    sc0.trigger()
-    # sc0.configure_trigger_immediate() #https://nimi-python.readthedocs.io/en/1.2.1/niscope/class.html
-    sc0.wait_until_acquisition_done(2)
-    record_number = 0
-    [t, waveform] = sc0.measure(channel_nr=0, record_number=record_number)
-    # plt.plot(t, waveform)
-    # plt.grid()
-    # plt.show()
-
-
-
-
-
-time.sleep(1)
 
 
 # [V,I] = PS.meas_6V()
