@@ -92,7 +92,7 @@ class PlotData:
 
     def plot_all_data(self):
         """
-        Plots all the data in the object.
+        Plots all the data in the object when the values are larger than 0.05.
 
         If `y2` is empty, it plots the data in `y` against `x` using different colors and labels.
         If `y2` is not empty, it plots the data in `y` against `x` on the left y-axis and the data
@@ -106,7 +106,9 @@ class PlotData:
         """
         if len(self.y2) == 0:
             for i in range(len(self.y)):
-                plt.plot(self.x[i], self.y[i], label=self.label[i])
+                #plot only if max value of y is larger than 0.02
+                if max(abs(self.y[i]))>0.02:
+                    plt.plot(self.x[i], self.y[i], label=self.label[i])
             plt.xlabel(self.x_label)
             plt.ylabel(self.y_label)
             plt.title(self.title)
@@ -119,14 +121,16 @@ class PlotData:
             ax1.set_xlabel(self.x_label)
             ax1.set_ylabel(self.y_label, color=color)
             for i in range(len(self.y)):
-                ax1.plot(self.x[i], self.y[i], label=self.label[i], color=colors[i])
+                if max(abs(self.y[i]))>0.02:
+                    ax1.plot(self.x[i], self.y[i], label=self.label[i], color=colors[i])
             ax1.tick_params(axis='y', labelcolor=color)
             ax1.grid(True)
             ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
             color = 'tab:blue'
             ax2.set_ylabel(self.y2_label, color=color)  # we already handled the x-label with ax1
             for i in range(len(self.y2)):
-                ax2.plot(self.x2[i], self.y2[i], label=self.label2[i], color=colors[i+len(self.y)])
+                if max(abs(self.y2[i]))>0.05:
+                    ax2.plot(self.x2[i], self.y2[i], label=self.label2[i], color=colors[i+len(self.y)])
             ax2.tick_params(axis='y', labelcolor=color)
             ax2.grid(True)
             fig.tight_layout()  # otherwise the right y-label is slightly clipped
