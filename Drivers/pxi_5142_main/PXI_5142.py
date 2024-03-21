@@ -254,7 +254,7 @@ class PXI_5142:
                  trigger_slope='POSITIVE', trigger_source_channel_nr=0, 
                  labels=["Voltage input", "Voltage Output", "Current Input", "Current Output"]) -> PlotData:
         """
-        Acquires waveform data from two scopes and returns a PlotData object. In this method one has a on sc0 the voltage and on sc1 the current
+        Acquires waveform data from two scopes and returns a PlotData object. In this method one has on sc0 the voltage and on sc1 the current
 
         Parameters:
         - sc0 (object): PXI Ni-scope 1 (On this scope on channel 0 is the trigger).
@@ -290,7 +290,7 @@ class PXI_5142:
         session_list=[sc0.instr, sc1.instr]
         # set the vertical and horizontal settings for each scope
         for session in session_list:
-            session.configure_vertical(range=6.0, coupling=niscope.VerticalCoupling.DC, probe_attenuation=10.0)
+            session.configure_vertical(range=6.0, coupling=niscope.VerticalCoupling.DC, probe_attenuation=1.0)
             session.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=50.0, num_records=1, enforce_realtime=True)
 
         # configure the trigger settings for the first scope
@@ -308,14 +308,15 @@ class PXI_5142:
         if sc1.instr.acquisition_status().name=="IN_PROGRESS":
             print("Something went wrong ==> most probably the scope did not trigger")
         #get the waveform data.
+        current_ratio=2.5 # 2.5V/A
         waveforms1 = sc0.instr.channels[0].fetch(num_samples=num_samples)
         waveforms2 = sc0.instr.channels[1].fetch(num_samples=num_samples)
         waveforms3 = sc1.instr.channels[0].fetch(num_samples=num_samples)
         waveforms4 = sc1.instr.channels[1].fetch(num_samples=num_samples)
         waveform1= np.array(waveforms1[0].samples.obj)
         waveform2= np.array(waveforms2[0].samples.obj)
-        waveform3= np.array(waveforms3[0].samples.obj)
-        waveform4= np.array(waveforms4[0].samples.obj)
+        waveform3= np.array(waveforms3[0].samples.obj)/current_ratio
+        waveform4= np.array(waveforms4[0].samples.obj)/current_ratio
 
         plot_data = PlotData()
         plot_data.add_data(time_t, waveform1, label=labels[0])

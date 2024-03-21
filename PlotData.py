@@ -3,6 +3,9 @@ This module contains the PlotData class for plotting data using Matplotlib.
 """
 
 import matplotlib.pyplot as plt
+import os
+
+
 
 class PlotData:
     """
@@ -120,6 +123,7 @@ class PlotData:
             color = 'tab:red'
             ax1.set_xlabel(self.x_label)
             ax1.set_ylabel(self.y_label, color=color)
+            #only plot if data makes sense
             for i in range(len(self.y)):
                 if max(abs(self.y[i]))>0.02:
                     ax1.plot(self.x[i], self.y[i], label=self.label[i], color=colors[i])
@@ -129,10 +133,13 @@ class PlotData:
             color = 'tab:blue'
             ax2.set_ylabel(self.y2_label, color=color)  # we already handled the x-label with ax1
             for i in range(len(self.y2)):
-                if max(abs(self.y2[i]))>0.05:
+                if max(abs(self.y2[i]))>0.001:
                     ax2.plot(self.x2[i], self.y2[i], label=self.label2[i], color=colors[i+len(self.y)])
             ax2.tick_params(axis='y', labelcolor=color)
             ax2.grid(True)
-            fig.tight_layout()  # otherwise the right y-label is slightly clipped
+            plt.title(self.title)
             fig.legend()
-            plt.show()
+            fig.tight_layout()  # otherwise the right y-label is slightly clipped
+            current_directory = os.getcwd()
+            plt.savefig(f'{current_directory}\\images\\{self.title}.png')
+            # plt.show()

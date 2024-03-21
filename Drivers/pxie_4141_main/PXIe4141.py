@@ -9,6 +9,7 @@ in the PXI system. For more inforimation -> see README.md
 import nidcpower
 import numpy as np
 import logging
+import time
 
 class PXIe4141:
     
@@ -285,8 +286,60 @@ class PXIe4141:
             self.instr.channels[channel_nr].initiate()
         else:
             self.instr.channels[channel_nr].abort()
-            
+                    
+    def set_all_smu_outputs_to_voltage(self, output_voltage=5):
+        """
+        Sets the output voltage of all SMU channels to a specified value.
 
+        Args:
+            output_voltage (float, optional): The desired output voltage. Defaults to 5.
+
+        Returns:
+            None
+        """
+        print("Set speed of SMU channel")
+        self.set_aperture(1, 0.001, 2)
+        self.set_aperture(2, 0.001, 2)
+        self.set_aperture(0, 0.001, 2)
+        print(f"Set {output_voltage}V on output of SMU channel zero")
+        # Todo change current limit to 100mA
+        self.configure_channel_vdc(1, 6, 0.0, -0.001, 0.1)
+        self.configure_channel_vdc(2, 6, 0.0, -0.001, 0.1)
+        self.configure_channel_vdc(0, 6, 0.0, -0.001, 0.1)
+        if abs(self.measure(0)[0])>0.01:
+            print("Voltage:" + str(self.measure(0)[0]))
+            print("SMU Voltage was not zero before enabling the channel")
+        print("enable the channel")
+        self.enable(1, True)
+        self.enable(2, True)
+        self.enable(0, True)
+        if abs(self.measure(0)[0])>0.01:
+            print("Voltage:" + str(self.measure(0)[0]))
+            print("SMU Voltage was not zero after enabling the channel")
+        self.set_voltage(1 ,output_voltage,True)
+        self.set_voltage(2 ,output_voltage,True)
+        self.set_voltage(0 ,output_voltage,True)
+        time.sleep(0.05)
+        deviation=abs(1-(self.measure(0)[0]/output_voltage))
+        if (deviation>=0.01):
+            print("Voltage:" + str(self.measure(0)[0]))
+            print(f"SMU output does not have correct value, deviation was: {deviation}")
+    
+    def set_all_smu_outputs_to_zero_and_disable(self):
+        """
+        Sets all SMU outputs to zero and disables them.
+
+        Parameters:
+
+        Returns:
+        - None
+        """
+        self.set_voltage(1, 0, True)
+        self.set_voltage(2, 0, True)
+        self.set_voltage(0, 0, True)
+        self.set_voltage(1, 0, False)
+        self.set_voltage(2, 0, False)
+        self.set_voltage(0, 0, False)
 
 if __name__ == '__main__':
     import logging

@@ -160,7 +160,7 @@ class Database:
             table_name (str, optional): The name of the table to delete measurements from.
                 Defaults to "measurements".
         """
-        self.cur.execute(f"DELETE FROM {table_name} WHERE timestamp < '{timestamp_cutoff}'")
+        self.cur.execute(f"DELETE FROM {table_name} WHERE time_stamp < '{timestamp_cutoff}'")
         self.con.commit()
 
     def delete_oldest_measurements(self, measurement, column_name="measurement_type",
