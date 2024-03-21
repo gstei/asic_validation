@@ -123,7 +123,9 @@ class PXIe4141:
         # output_connected : Not supported
         self.instr.channels[channel_nr].voltage_level = voltage
         self.instr.channels[channel_nr].output_enabled = enable
-        
+    def set_all_voltages(self, voltage: float, enable : bool):
+        self.instr.voltage_level = voltage
+        self.instr.output_enabled = enable
     def set_current(self, channel_nr: int, current: float, enable : bool):
         # output_connected : Not supported
         self.instr.channels[channel_nr].current_level = current
@@ -316,9 +318,10 @@ class PXIe4141:
         if abs(self.measure(0)[0])>0.01:
             print("Voltage:" + str(self.measure(0)[0]))
             print("SMU Voltage was not zero after enabling the channel")
-        self.set_voltage(1 ,output_voltage,True)
-        self.set_voltage(2 ,output_voltage,True)
-        self.set_voltage(0 ,output_voltage,True)
+        # self.set_voltage(1 ,output_voltage,True)
+        # self.set_voltage(2 ,output_voltage,True)
+        # self.set_voltage(0 ,output_voltage,True)
+        self.set_all_voltages(output_voltage,True)
         time.sleep(0.05)
         deviation=abs(1-(self.measure(0)[0]/output_voltage))
         if (deviation>=0.01):

@@ -41,6 +41,7 @@ def main():
     
     # Create database
     database = Database("measurements")
+    chip_id= "TI"
     
     if 1:
         resistor_values = ['R1', 'R2', 'R3', 'R4']
@@ -48,16 +49,24 @@ def main():
         for voltage in voltages:
             for resistor in resistor_values:
                 dcdc = DCDCConverterStartupTest.run(smu0, sc0, sc1, power_sup, gpio, voltage, resistor)
-                database.insert("DCDC startup", dcdc, "Passed")
+                database.insert(f"{chip_id}", "normal startup", dcdc, "Passed", f"{voltage}V", resistor)
+    if 1:
+        resistor_values = ['R1', 'R2', 'R3', 'R4']
+        voltages = [4.3, 5, 5.5]
+        for voltage in voltages:
+            for resistor in resistor_values:
+                dcdc = DCDCConverterResetTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
+                database.insert(f"{chip_id}", "reset startup", dcdc, "Passed", f"{voltage}V", resistor)
     if 0:
         resistor_values = ['R1', 'R2', 'R3', 'R4']
         voltages = [4.3, 5, 5.5]
         for voltage in voltages:
             for resistor in resistor_values:
                 dcdc = DCDCConverterResetTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
-                database.insert(f"DCDC reset active {voltage}V, {resistor}", dcdc, "Passed")
+                database.insert(f"{chip_id}", "input voltage jump", dcdc, "Passed", f"{voltage}V", resistor)
+    
+    database.delete_measurement_before("2024-03-21 12:10:38")
     database.print_table()
-    database.delete_measurement_before("2024-03-21 10:18:08")
 
 if __name__ == "__main__":
     main()

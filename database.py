@@ -3,6 +3,7 @@
 
 import sqlite3
 import pickle
+import matplotlib.pyplot as plt
 
 
 class Database:
@@ -51,33 +52,42 @@ class Database:
 
         The table has the following columns:
         - id: INTEGER (Primary Key)
+        - chip_id TEXT,
         - measurement_type: TEXT
+        - measurement_parameter1 TEXT
+        - measurement_parameter2 TEXT,
         - measurement_data: TEXT
         - measurement_result: TEXT
         - time_stamp: TIMESTAMP (Default: CURRENT_TIMESTAMP)
         """
         self.cur.execute('''CREATE TABLE IF NOT EXISTS measurements
              (id INTEGER PRIMARY KEY,
+             chip_id TEXT,
              measurement_type TEXT,
+             measurement_parameter1 TEXT,
+             measurement_parameter2 TEXT,
              measurement_data TEXT,
              measurement_result TEXT,
              time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
 
-    def insert(self, measurement_type, measurements_data, measurement_result):
+    def insert(self, chip_id, measurement_type, measurements_data, measurement_result, measurement_parameter1="", measurement_parameter2=""):
         """
         Inserts a new measurement into the database.
 
         Args:
+            chip_id (str): The ID of the chip.
             measurement_type (str): The type of measurement.
+            measurement_parameter1 (str): The first parameter of the measurement.
+            measurement_parameter2 (str): The second parameter of the measurement.
             measurements_data (object): The data associated with the measurement.
             measurement_result (float): The result of the measurement.
 
         Returns:
             None
         """
-        self.cur.execute("INSERT INTO measurements (measurement_type, measurement_data," +
-                         " measurement_result) VALUES (?, ?, ?)",
-                         (measurement_type, pickle.dumps(measurements_data), measurement_result))
+        self.cur.execute("INSERT INTO measurements (chip_id, measurement_type, measurement_data," +
+                         " measurement_result, measurement_parameter1, measurement_parameter2) VALUES (?, ?, ?, ?, ?, ?)",
+                         (chip_id, measurement_type, pickle.dumps(measurements_data), measurement_result, measurement_parameter1, measurement_parameter2))
         self.con.commit()
 
     def read(self):
@@ -110,7 +120,7 @@ class Database:
         column_lengths = [len(column) for column in columns_name]
         for row in data_fetched:
             for i, value in enumerate(row):
-                if i == 2:
+                if i == 5:
                     if len(value) > 10:
                         column_lengths[i] = max(column_lengths[i], len("Data true"))
                     else:
@@ -126,7 +136,7 @@ class Database:
             row_values = []
             for i, value in enumerate(row):
                 formated_value = str(value).ljust(column_lengths[i])
-                if i == 2:
+                if i == 5:
                     if len(value) > 10:
                         formated_value = "Data true".ljust(column_lengths[i])
                     else:
@@ -215,12 +225,43 @@ class Database:
         self.cur.execute(f"SELECT {field_name} FROM {table_name} WHERE id  = ?", (id_to_select,))
         row = self.cur.fetchone()
         return row[0] if row is not None else None
+    def plot_last_n_entries(self, n=9):
+        """
+        Plots the last n entries from the database.
+
+        Args:
+            n (int): The number of entries to plot.
+
+        Returns:
+            None
+        """
+        # Query the last n entries from the database
+        # self.cur.execute("SELECT * FROM measurements ORDER BY time_stamp DESC LIMIT ?", (n,))
+        # rows = self.cur.fetchall()
+        measurement_type = "normal startup"
+        self.cur.execute("SELECT * FROM measurements WHERE measurement_type = ? ORDER BY time_stamp DESC LIMIT ?", (measurement_type, n))
+        rows = self.cur.fetchall()
+
+        # Unpack the pickled data and create a plot
+        for row in rows:
+            index, chip_id, measurement_type, measurement_parameter1, measurement_parameter2, measurement_data, measurement_result, _ = row
+            measurement_data = pickle.loads(measurement_data)
+            if hasattr(measurement_data, 'efficiency'):
+                plt.scatter(measurement_data.out_current, measurement_data.efficiency, label=measurement_type)
+            else:
+                print("Efficiency does not exist in measurement_data")
+        plt.legend()
+        plt.show()
+        input("Press Enter to continue...")
 if __name__ == "__main__":
-    db=Database("test")
-    db.print_table()
-    db.insert("test", [1,2,3,4,5], "Failed")
-    db.print_table()
-    data= pickle.loads(db.select_field_by_id(1))
-    print(data)
-    # db.delete_entries([1])
-    db.delete_oldest_measurements("test")
+    database = Database("measurements")
+    database.print_table()
+    database.plot_last_n_entries(9)
+    # db=Database("test")
+    # db.print_table()
+    # db.insert("test", [1,2,3,4,5], "Failed")
+    # db.print_table()
+    # data= pickle.loads(db.select_field_by_id(1))
+    # print(data)
+    # # db.delete_entries([1])
+    # db.delete_oldest_measurements("test")

@@ -18,9 +18,9 @@ class DCDCConverterStartupTest:
     @staticmethod
     def smu_startup_test(smu0: PXIe4141, gpio: GPIOController, output_voltage=5, resistor="R1"):
         gpio.set_output(reset=False, **{resistor: True})
-        time.sleep(0.5)
+        time.sleep(0.3)
         smu0.set_all_smu_outputs_to_voltage(output_voltage)
-        time.sleep(0.2)
+        time.sleep(0.1)
         gpio.set_output(reset=False, **{resistor: False})
         smu0.set_all_smu_outputs_to_zero_and_disable()
     @staticmethod

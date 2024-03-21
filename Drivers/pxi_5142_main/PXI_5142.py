@@ -174,8 +174,8 @@ class PXI_5142:
         waveforms0 = self.instr.channels[0].read(num_samples=1000)
         waveforms1 = self.instr.channels[1].read(num_samples=1000)
         return [time, np.array([waveforms0[0].samples.obj, waveforms1[0].samples.obj])]
-    @staticmethod
     
+    @staticmethod
     def get_data(sc0, sc1, delta_t=100e-3, num_samples=20000, trigger_level=0.1, 
                  trigger_slope='POSITIVE', trigger_source_channel_nr=0) -> PlotData:
         """
@@ -248,7 +248,13 @@ class PXI_5142:
         plot_data.add_data(time_t, waveform2, label="sc0 channel 1")
         plot_data.add_data(time_t, waveform3, label="sc1 channel 0")
         plot_data.add_data(time_t, waveform4, label="sc1 channel 1")
+        print(f"Overshot was on input{sc0.instr.channels[0].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.OVERSHOOT)}")
+        print(f"Overshot was on output{sc0.instr.channels[1].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.OVERSHOOT)}")
+
         return plot_data
+    
+    def get_measurement(self, channel_nr:int, record_number:int) -> float:
+        return self.instr.channels[channel_nr].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.OVERSHOOT)
     
     def get_data2(sc0, sc1, delta_t=100e-3, num_samples=20000, trigger_level=0.1, 
                  trigger_slope='POSITIVE', trigger_source_channel_nr=0, 
@@ -323,6 +329,26 @@ class PXI_5142:
         plot_data.add_data(time_t, waveform2, label=labels[1])
         plot_data.add_data2(time_t, waveform3, label=labels[2])
         plot_data.add_data2(time_t, waveform4, label=labels[3])
+        # plot_data.out_voltage=sc0.instr.channels[1].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_TOP)[0].result
+        # plot_data.in_voltage=sc0.instr.channels[0].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_TOP)[0].result
+        # plot_data.out_current=sc1.instr.channels[1].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_TOP)[0].result/current_ratio
+        # plot_data.in_current=sc1.instr.channels[0].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_TOP)[0].result/current_ratio
+        plot_data.out_voltage=np.mean(waveform2[-100:])
+        plot_data.in_voltage=np.mean(waveform1[-100:])
+        plot_data.out_current=np.mean(waveform4[-100:])
+        plot_data.in_current=np.mean(waveform3[-100:])
+        power_in = plot_data.in_voltage*plot_data.in_current
+        power_out = plot_data.out_voltage*plot_data.out_current
+        efficiency = power_out/power_in
+        plot_data.efficiency = efficiency
+        #print the five values above
+        print(f"Efficiency was {plot_data.efficiency}")
+        print(f"Input Voltage was: {plot_data.in_voltage}V")
+        print(f"Output Voltage was: {plot_data.out_voltage}V")
+        print(f"Input Current was: {plot_data.in_current}A")
+        print(f"Output Current was: {plot_data.out_current}A")
+        # print(f"Top was on input{sc0.instr.channels[0].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_HIGH)[0].result}")
+        # print(f"Top was on output{sc0.instr.channels[1].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_HIGH)[0].result}")
         return plot_data
 
 
