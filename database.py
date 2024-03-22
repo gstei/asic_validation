@@ -227,7 +227,7 @@ class Database:
         return row[0] if row is not None else None
     def plot_last_n_entries(self, n=9):
         """
-        Plots the last n entries from the database.
+        Plots the efficiency.
 
         Args:
             n (int): The number of entries to plot.
@@ -247,12 +247,16 @@ class Database:
             index, chip_id, measurement_type, measurement_parameter1, measurement_parameter2, measurement_data, measurement_result, _ = row
             measurement_data = pickle.loads(measurement_data)
             if hasattr(measurement_data, 'efficiency'):
-                plt.scatter(measurement_data.out_current, measurement_data.efficiency, label=measurement_type)
+                plt.scatter(measurement_data.out_current, measurement_data.efficiency, label=measurement_data.title)
             else:
                 print("Efficiency does not exist in measurement_data")
         plt.legend()
+        plt.grid()
+        plt.xlabel("Output Current (A)")
+        plt.ylabel("Efficiency (%)")
+        plt.title(f"Efficiency vs Output Current for {chip_id}")
+        plt.tight_layout()
         plt.show()
-        input("Press Enter to continue...")
 if __name__ == "__main__":
     database = Database("measurements")
     database.print_table()

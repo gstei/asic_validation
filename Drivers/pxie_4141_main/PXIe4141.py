@@ -328,6 +328,7 @@ class PXIe4141:
             print("Voltage:" + str(self.measure(0)[0]))
             print(f"SMU output does not have correct value, deviation was: {deviation}")
     
+    
     def set_all_smu_outputs_to_zero_and_disable(self):
         """
         Sets all SMU outputs to zero and disables them.

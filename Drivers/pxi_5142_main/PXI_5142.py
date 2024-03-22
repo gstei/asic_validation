@@ -257,7 +257,7 @@ class PXI_5142:
         return self.instr.channels[channel_nr].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.OVERSHOOT)
     
     def get_data2(sc0, sc1, delta_t=100e-3, num_samples=20000, trigger_level=0.1, 
-                 trigger_slope='POSITIVE', trigger_source_channel_nr=0, 
+                 trigger_slope='POSITIVE', trigger_source_channel_nr=0, triger_position=50.0, voffset=0, vrange=6.0, trigger_scope=1, delay=0.0,
                  labels=["Voltage input", "Voltage Output", "Current Input", "Current Output"]) -> PlotData:
         """
         Acquires waveform data from two scopes and returns a PlotData object. In this method one has on sc0 the voltage and on sc1 the current
@@ -270,7 +270,10 @@ class PXI_5142:
         - trigger_level: The trigger level in volts. Default is 0.1V.
         - trigger_slope: The trigger slope. Default is 'POSITIVE'.
         - trigger_source_channel_nr: The channel number to use as the trigger source. Default is 0.
-
+        - triger_position: The position of the trigger in percent. Default is 50%.
+        - voffset: The offset of the voltage signal on the scope. Default is 0V.
+        - vrange: The range of the voltage signal on the scope. Default is 6V.
+        - trigger_scope: The scope that triggers the other scope. Default is 1. ==> One triggers on the voltage when set to zero one triggers the current
         Returns:
         - plot_data: A PlotData object containing the acquired waveform data.
 
@@ -280,10 +283,11 @@ class PXI_5142:
         - The acquired waveform data is stored in a PlotData object for easy plotting.
 
         """
-
+        time.sleep(delay)
         # Check if the acquisition is in progress and abort it if it is.
         if sc0.instr.acquisition_status().name=="IN_PROGRESS":
             sc0.instr.abort()
+        if sc1.instr.acquisition_status().name=="IN_PROGRESS":
             sc1.instr.abort()
         # calculate the sample rate
         horz_sample_rate=1/(delta_t/num_samples)
@@ -296,19 +300,33 @@ class PXI_5142:
         session_list=[sc0.instr, sc1.instr]
         # set the vertical and horizontal settings for each scope
         for session in session_list:
-            session.configure_vertical(range=6.0, coupling=niscope.VerticalCoupling.DC, probe_attenuation=1.0)
-            session.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=50.0, num_records=1, enforce_realtime=True)
+            if session==session_list[0]:
+                session.configure_vertical(range=vrange, coupling=niscope.VerticalCoupling.DC, probe_attenuation=1.0, offset=voffset)
+            else:
+                session.configure_vertical(range=3, coupling=niscope.VerticalCoupling.DC, probe_attenuation=1.0, offset=0)
+            session.configure_horizontal_timing(min_sample_rate=horz_sample_rate, min_num_pts=num_samples, ref_position=triger_position, num_records=1, enforce_realtime=True)
 
-        # configure the trigger settings for the first scope
-        sc0.configure_trigger_edge(trigger_source_channel_nr=trigger_source_channel_nr, trigger_coupling='DC', level=trigger_level, slope=trigger_slope)
-        # export the trigger from the first scope to the second scope (add trigger on pxi line 1)
-        sc0.instr.exported_ref_trigger_output_terminal="PXI_Trig1"
-        # set trigger of second scope to the exported trigger
-        sc1.instr.configure_trigger_digital(trigger_source="PXI_Trig1")
+        if trigger_scope:
+            # configure the trigger settings for the first scope
+            sc0.configure_trigger_edge(trigger_source_channel_nr=trigger_source_channel_nr, trigger_coupling='DC', level=trigger_level, slope=trigger_slope)
+            # export the trigger from the first scope to the second scope (add trigger on pxi line 1)
+            sc0.instr.exported_ref_trigger_output_terminal="PXI_Trig1"
+            # set trigger of second scope to the exported trigger
+            sc1.instr.configure_trigger_digital(trigger_source="PXI_Trig1")
+            # initiate the acquisition
+            sc1.instr.initiate()
+            sc0.instr.initiate()
+        else:
+            # configure the trigger settings for the first scope
+            sc1.configure_trigger_edge(trigger_source_channel_nr=trigger_source_channel_nr, trigger_coupling='DC', level=trigger_level, slope=trigger_slope)
+            # export the trigger from the first scope to the second scope (add trigger on pxi line 1)
+            sc1.instr.exported_ref_trigger_output_terminal="PXI_Trig1"
+            # set trigger of second scope to the exported trigger
+            sc0.instr.configure_trigger_digital(trigger_source="PXI_Trig1")
+            # initiate the acquisition
+            sc0.instr.initiate()
+            sc1.instr.initiate()
 
-        # initiate the acquisition
-        sc1.instr.initiate()
-        sc0.instr.initiate()
         # wait to be sure that the scope has triggered
         sc0.wait_until_acquisition_done(20)
         if sc1.instr.acquisition_status().name=="IN_PROGRESS":
@@ -349,6 +367,13 @@ class PXI_5142:
         print(f"Output Current was: {plot_data.out_current}A")
         # print(f"Top was on input{sc0.instr.channels[0].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_HIGH)[0].result}")
         # print(f"Top was on output{sc0.instr.channels[1].fetch_measurement_stats(scalar_meas_function=niscope.ScalarMeasurement.VOLTAGE_HIGH)[0].result}")
+        
+        # Free trigger source
+        if trigger_scope:
+            sc0.instr.exported_ref_trigger_output_terminal=""
+        else:
+            sc1.instr.exported_ref_trigger_output_terminal=""
+        
         return plot_data
 
 
