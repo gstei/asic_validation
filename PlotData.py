@@ -140,6 +140,9 @@ class PlotData:
             plt.title(self.title)
             fig.legend()
             fig.tight_layout()  # otherwise the right y-label is slightly clipped
+            fig.set_figheight(9*2/3)
+            fig.set_figwidth(16*2/3)
+            
             current_directory = os.getcwd()
-            plt.savefig(f'{current_directory}\\images\\{self.title}.png')
+            plt.savefig(f'{current_directory}\\images\\{self.title}.png', dpi=300)
             # plt.show()

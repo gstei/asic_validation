@@ -10,24 +10,33 @@ from Drivers.e3631a_main.E3631A import E3631A
 import concurrent.futures
 import time
 
-
+normal_mode=False
 class DCDCConverterLoadTest:
     def __init__(self, oscilloscope, smu):
         print("init")
-
+    
 
     @staticmethod
-    def step_test(gpio: GPIOController, smu0: PXIe4141, voltage: float, resistor="R1"):
+    def step_test(gpio: GPIOController, smu0: PXIe4141, power_sup: E3631A, voltage: float, resistor="R1"):
         # enable the reset
         # gpio.set_output(reset=False, **{resistor: False})
-        smu0.set_all_smu_outputs_to_voltage(voltage)
+        if normal_mode:
+            smu0.set_all_smu_outputs_to_voltage(voltage)
+        else:
+            time.sleep(0.2)
+            power_sup.set_P25V(voltage, 0.4)
+            time.sleep(0.1)
+            power_sup.en_output(True)
         # enable the chip
         time.sleep(0.3)
         gpio.set_output(reset=False, **{resistor: True})
         time.sleep(0.005)
         gpio.set_output(reset=False, **{resistor: False})
         time.sleep(0.1)
-        smu0.set_all_smu_outputs_to_zero_and_disable()
+        if normal_mode:
+            smu0.set_all_smu_outputs_to_zero_and_disable()
+        else:
+            power_sup.en_output(False)
         time.sleep(0.2)
     @staticmethod
     def run(gpio: GPIOController, smu0: PXIe4141, sc0: PXI_5142, sc1: PXI_5142, power_sup: E3631A, voltage: float, resistor : str):
@@ -35,18 +44,19 @@ class DCDCConverterLoadTest:
         print("Connect Oscilloscope at slot8 with the Voltages osc0 with input voltage osc1 with output voltage")
         print("Connect Oscilloscope at slot7 with the Currents osc0 with input current osc1 with output current")
         print("Connect Power supply to the PCB (6V output)")
-        power_sup.set_6V(5,0.4)
-        power_sup.en_output(True)
+        if normal_mode:
+            power_sup.set_6V(5,0.4)
+            power_sup.en_output(True)
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            smu_return = executor.submit(DCDCConverterLoadTest.step_test, gpio, smu0, voltage, resistor)
+            smu_return = executor.submit(DCDCConverterLoadTest.step_test, gpio, smu0, power_sup, voltage, resistor)
             scope_return = executor.submit(PXI_5142.get_data2, sc0, sc1, trigger_source_channel_nr=1, trigger_level=0.01, delta_t=25e-3, triger_position=10.0, voffset=0, vrange=6.0, trigger_scope=0, delay=0.2) #we trigger the output voltage
             
 
         return_value_scope = scope_return.result()
         return_value_scope.title = f"DCDC step test with load step with resistor {resistor} at voltage {voltage}V"
         return_value_smu = smu_return.result()
-
-        power_sup.en_output(False)
+        if normal_mode:
+            power_sup.en_output(False)
         return_value_scope.plot_all_data()
         return return_value_scope
 
