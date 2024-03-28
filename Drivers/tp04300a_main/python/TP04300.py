@@ -5,7 +5,6 @@ Created on Mon Sep 12 11:27:52 2022
 """
 import pyvisa
 import time
-from metric import to_si
 
 
 class TP04300:
@@ -203,7 +202,7 @@ class TP04300:
     def getDutTemperature_and_plot(self, name:str) -> float:
         """ always return DUT temperature (without offset) """
         temperature = self.getDutTemperature()
-        print(name + ' = ' + to_si(temperature) + '°C')
+        print(name + ' = ' + (temperature) + '°C')
         return temperature
     
     def getAirTemperaturLimit(self) -> int:
