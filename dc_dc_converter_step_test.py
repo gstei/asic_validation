@@ -11,27 +11,33 @@ import concurrent.futures
 import time
 
 normal_mode=False
-class DCDCConverterResetPowerOnTest:
+class DcDcConverterStepTest:
     def __init__(self, oscilloscope, smu):
         print("init")
 
 
     @staticmethod
-    def reset_test(gpio: GPIOController, smu0: PXIe4141, power_sup: E3631A, voltage, resistor="R1"):
+    def step_test(gpio: GPIOController, smu0: PXIe4141, power_sup: E3631A, step=[4.3, 5.5], resistor="R1"):
         # enable the reset
         gpio.set_output(reset=False, **{resistor: True})
         if normal_mode:
-            smu0.set_all_smu_outputs_to_voltage(voltage)
+            smu0.set_all_smu_outputs_to_voltage(step[0])
         else:
             time.sleep(0.2)
-            power_sup.set_P25V(voltage, 0.4)
+            power_sup.set_P25V(step[0], 0.4)
             time.sleep(0.1)
             power_sup.en_output(True)
         # enable the chip
         time.sleep(0.3)
-        gpio.set_output(reset=True, **{resistor: True})
+        if normal_mode:
+            smu0.set_all_voltages(step[1], True)
+        else:
+            power_sup.set_P25V(step[1], 0.4)
         time.sleep(0.01)
-        gpio.set_output(reset=False, **{resistor: True})
+        if normal_mode:
+            smu0.set_all_voltages(step[0], True)
+        else:
+            power_sup.set_P25V(step[0], 0.4)
         time.sleep(0.1)
         gpio.set_output(**{resistor: False})
         if normal_mode:
@@ -39,7 +45,7 @@ class DCDCConverterResetPowerOnTest:
         else:
             power_sup.en_output(False)
     @staticmethod
-    def run(gpio: GPIOController, smu0: PXIe4141, sc0: PXI_5142, sc1: PXI_5142, power_sup: E3631A, voltage, resistor : str):
+    def run(gpio: GPIOController, smu0: PXIe4141, sc0: PXI_5142, sc1: PXI_5142, power_sup: E3631A, step, resistor : str):
         print("Connect SMU0, SMU1, SMU3 to the input of the CHIP")
         print("Connect Oscilloscope at slot8 with the Voltages osc0 with input voltage osc1 with output voltage")
         print("Connect Oscilloscope at slot7 with the Currents osc0 with input current osc1 with output current")
@@ -48,12 +54,12 @@ class DCDCConverterResetPowerOnTest:
             power_sup.set_6V(5,0.4)
             power_sup.en_output(True)
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            smu_return = executor.submit(DCDCConverterResetPowerOnTest.reset_test, gpio, smu0, power_sup, voltage, resistor)
-            scope_return = executor.submit(PXI_5142.get_data2, sc0, sc1, trigger_source_channel_nr=1, trigger_level=4.6, delta_t=50e-3, triger_position=10.0, voffset=0, vrange=6.0, trigger_slope="NEGATIVE", delay=0.2) #we trigger the output voltage
+            smu_return = executor.submit(DcDcConverterStepTest.step_test, gpio, smu0, power_sup, step, resistor)
+            scope_return = executor.submit(PXI_5142.get_data2, sc0, sc1, trigger_source_channel_nr=0, trigger_level=step[0]+0.5, delta_t=50e-3, triger_position=10.0, voffset=0, vrange=6.0) #we trigger the output voltage
             
 
         return_value_scope = scope_return.result()
-        return_value_scope.title = f"DCDC reset while powered {voltage}V with resistor {resistor}"
+        return_value_scope.title = f"DCDC step test with step from {step[0]}V to {step[1]}V with resistor {resistor}"
         return_value_smu = smu_return.result()
         if normal_mode:
             power_sup.en_output(False)

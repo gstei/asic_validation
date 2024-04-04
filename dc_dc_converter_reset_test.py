@@ -12,7 +12,7 @@ import time
 
 normal_mode=False
 
-class DCDCConverterResetTest:
+class DcDcConverterResetTest:
     def __init__(self, oscilloscope, smu):
         print("init")
 
@@ -49,7 +49,7 @@ class DCDCConverterResetTest:
             power_sup.en_output(True)
         with concurrent.futures.ThreadPoolExecutor() as executor:
             scope_return = executor.submit(PXI_5142.get_data2, sc0, sc1, trigger_source_channel_nr=1, trigger_level=0.1, delta_t=20e-3) #we trigger the output voltage
-            smu_return = executor.submit(DCDCConverterResetTest.reset_test, gpio, smu0, power_sup, voltage, resistor)
+            smu_return = executor.submit(DcDcConverterResetTest.reset_test, gpio, smu0, power_sup, voltage, resistor)
 
         return_value_scope = scope_return.result()
         return_value_scope.title = f"DCDC Reset Test with {voltage}V and resistor {resistor}"

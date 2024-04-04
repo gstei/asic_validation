@@ -3,11 +3,11 @@ This is the execution script to execute the different tests
 To see the functions of the different instruments go to  https://nimi-python.readthedocs.io/en/1.2.1/niscope/class.html
 """
 
-from DCDCConverterStartupTest import DCDCConverterStartupTest
-from DCDCConverterResetTest import DCDCConverterResetTest
-from DCDCConverterStepTest import DCDCConverterStepTest
-from DCDCConverterLoadTest import DCDCConverterLoadTest
-from DCDCConverterResetPowerOnTest import DCDCConverterResetPowerOnTest
+from dc_dc_converter_startup_test import DcDcConverterStartupTest
+from dc_dc_converter_reset_test import DcDcConverterResetTest
+from dc_dc_converter_step_test import DcDcConverterStepTest
+from dc_dc_converter_load_test import DcDcConverterLoadTest
+from dc_dc_converter_reset_power_on_test import DcDcConverterResetPowerOnTest
 # import SMU drivers
 from Drivers.pxie_4141_main.PXIe4141 import PXIe4141
 # import Oscilloscope drivers
@@ -79,7 +79,7 @@ def main():
             voltages = [4.3, 5, 5.5]
             for voltage in voltages:
                 for resistor in resistor_values:
-                    dcdc = DCDCConverterStartupTest.run(smu0, sc0, sc1, power_sup, gpio, voltage, resistor)
+                    dcdc = DcDcConverterStartupTest.run(smu0, sc0, sc1, power_sup, gpio, voltage, resistor)
                     dcdc.temperature = measurement_temperature
                     dcdc.title = dcdc.title + f", {measurement_temperature}°C"
                     database.insert(f"{chip_id}", "normal startup", dcdc, "Passed", f"{voltage}V", resistor, measurement_temperature=measurement_temperature)
@@ -89,7 +89,7 @@ def main():
                 voltages = [4.3, 5, 5.5]
                 for voltage in voltages:
                     for resistor in resistor_values:
-                        dcdc = DCDCConverterResetTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
+                        dcdc = DcDcConverterResetTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
                         dcdc.temperature = measurement_temperature
                         dcdc.title = dcdc.title + f", {measurement_temperature}°C"
                         database.insert(f"{chip_id}", "reset startup", dcdc, "Passed", f"{voltage}V", resistor, measurement_temperature=measurement_temperature)
@@ -98,7 +98,7 @@ def main():
                 steps = [[4.3,4.8], [4.3,5], [4.3,5.3]]
                 for step in steps:
                     for resistor in resistor_values:
-                        dcdc = DCDCConverterStepTest.run(gpio, smu0, sc0, sc1, power_sup, step, resistor)
+                        dcdc = DcDcConverterStepTest.run(gpio, smu0, sc0, sc1, power_sup, step, resistor)
                         dcdc.temperature = measurement_temperature
                         dcdc.title = dcdc.title + f", {measurement_temperature}°C"
                         database.insert(f"{chip_id}", "input voltage jump", dcdc, "Passed", f"{step[0]}V to {step[1]}V", resistor, measurement_temperature=measurement_temperature)
@@ -107,7 +107,7 @@ def main():
                 voltages = [4.3, 5, 5.5]
                 for voltage in voltages:
                     for resistor in resistor_values:
-                        dcdc = DCDCConverterLoadTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
+                        dcdc = DcDcConverterLoadTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
                         dcdc.temperature = measurement_temperature
                         dcdc.title = dcdc.title + f", {measurement_temperature}°C"
                         database.insert(f"{chip_id}", "load jump", dcdc, "Passed", f"{voltage}V", resistor, measurement_temperature=measurement_temperature)
@@ -116,7 +116,7 @@ def main():
                 voltages = [4.3, 5, 5.5]
                 for voltage in voltages:
                     for resistor in resistor_values:
-                        dcdc = DCDCConverterResetPowerOnTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
+                        dcdc = DcDcConverterResetPowerOnTest.run(gpio, smu0, sc0, sc1, power_sup, voltage, resistor)
                         dcdc.temperature = measurement_temperature
                         dcdc.title = dcdc.title + f", {measurement_temperature}°C"
                         database.insert(f"{chip_id}", "reset while powered", dcdc, "Passed", f"{voltage}V", resistor, measurement_temperature=measurement_temperature)
