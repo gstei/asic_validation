@@ -243,7 +243,7 @@ class PXI_5142:
         waveform3= np.array(waveforms3[0].samples.obj)
         waveform4= np.array(waveforms4[0].samples.obj)
 
-        plot_data = plot_data()
+        plot_data = PlotData()
         plot_data.add_data(time_t, waveform1, label="sc0 channel 0")
         plot_data.add_data(time_t, waveform2, label="sc0 channel 1")
         plot_data.add_data(time_t, waveform3, label="sc1 channel 0")

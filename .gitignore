@@ -1,4 +1,4 @@
 *.log
 *.pyc
 *.db
-.images/*.png
+images/*.png

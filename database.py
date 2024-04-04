@@ -310,7 +310,7 @@ class Database:
 
     def plot_measurement_data(self, id_to_select):
         """
-        Loads the measurement_data of a specific entry from the database and calls the plot_data() method.
+        Loads the measurement_data of a specific entry from the database and calls the PlotData() method.
 
         Args:
             id_to_select (int): The ID of the entry to select.
