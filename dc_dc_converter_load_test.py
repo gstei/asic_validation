@@ -41,7 +41,7 @@ class DcDcConverterLoadTest:
         if NORMAL_MODE:
             smu0.set_all_smu_outputs_to_voltage(voltage)
         else:
-            time.sleep(0.2)
+            time.sleep(0.1)
             power_sup.set_P25V(voltage, 0.4)
             time.sleep(0.1)
             power_sup.en_output(True)
@@ -92,8 +92,8 @@ class DcDcConverterLoadTest:
                                            vrange=6.0, trigger_scope=0, delay=0.2)
 
         return_value_scope = scope_return.result()
-        return_value_scope.title = f"""DCDC step test with load step with resistor {resistor}
-                                    at voltage {voltage}V"""
+        return_value_scope.title = f"DCDC step test with load step with resistor {resistor}" +\
+        f" at voltage {voltage}V"""
         return_value_smu = smu_return.result()
         if NORMAL_MODE:
             power_sup.en_output(False)

@@ -1,20 +1,27 @@
-2024-03-07 09:06:20,670 - root - Log File created
-2024-03-07 09:06:20,673 - SMU - SMU Object created
-2024-03-07 09:06:21,247 - SMU - Selftest passed
-2024-03-07 09:06:31,389 - SMU - Device reseted
-2024-03-07 09:06:31,416 - SMU - Channel 0 was enabled
-2024-03-07 09:06:31,453 - SMU - Measure: Ch0, V=1.0000V, I=0.0000A, R=4957319.2028Ohm, P=0.0000W: mode=VDC
-2024-03-07 09:06:31,505 - SMU - Measure: Ch0, V=2.0000V, I=0.0000A, R=4844892.0955Ohm, P=0.0000W: mode=VDC
-2024-03-07 09:06:31,557 - SMU - Measure: Ch0, V=3.0000V, I=0.0000A, R=5011031.2892Ohm, P=0.0000W: mode=VDC
-2024-03-07 09:06:31,558 - SMU - Channel 0 was disabled
-2024-03-07 09:06:31,569 - SMU - Channel 0 was enabled
-2024-03-07 09:06:31,570 - SMU - Channel 1 was enabled
-2024-03-07 09:06:31,652 - SMU - Measure: Ch0, V=1.0000V, I=0.0000A, R=4885481.2741Ohm, P=0.0000W: mode=VDC
-2024-03-07 09:06:31,734 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-9726411.9816Ohm, P=-0.0000W: mode=IDC
-2024-03-07 09:06:31,734 - SMU - Output is tripped!
-2024-03-07 09:06:31,821 - SMU - Measure: Ch0, V=2.0000V, I=0.0000A, R=4959713.5884Ohm, P=0.0000W: mode=VDC
-2024-03-07 09:06:31,903 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-9765419.9059Ohm, P=-0.0000W: mode=IDC
-2024-03-07 09:06:31,904 - SMU - Output is tripped!
-2024-03-07 09:06:31,904 - SMU - Channel 0 was disabled
-2024-03-07 09:06:31,905 - SMU - Channel 1 was disabled
-2024-03-07 09:07:00,218 - SMU - Channel 0 was enabled
+2024-04-04 12:11:50,856 - root - Log File created
+2024-04-04 12:11:50,858 - SMU - SMU Object created
+2024-04-04 12:11:51,438 - SMU - Selftest passed
+2024-04-04 12:12:01,550 - SMU - Device reseted
+2024-04-04 12:12:01,579 - SMU - Channel 0 was enabled
+2024-04-04 12:12:01,616 - SMU - Measure: Ch0, V=1.0000V, I=-0.0000A, R=-20241122.1720Ohm, P=-0.0000W: mode=VDC
+2024-04-04 12:12:01,668 - SMU - Measure: Ch0, V=2.0000V, I=-0.0000A, R=-38553290.4470Ohm, P=-0.0000W: mode=VDC
+2024-04-04 12:12:01,721 - SMU - Measure: Ch0, V=3.0000V, I=-0.0000A, R=-62602394.7637Ohm, P=-0.0000W: mode=VDC
+2024-04-04 12:12:01,722 - SMU - Channel 0 was disabled
+2024-04-04 12:12:01,733 - SMU - Channel 0 was enabled
+2024-04-04 12:12:01,734 - SMU - Channel 1 was enabled
+2024-04-04 12:12:01,816 - SMU - Measure: Ch0, V=1.0000V, I=-0.0000A, R=-20040536.7769Ohm, P=-0.0000W: mode=VDC
+2024-04-04 12:12:01,899 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-17107364.7376Ohm, P=-0.0000W: mode=IDC
+2024-04-04 12:12:01,899 - SMU - Output is tripped!
+2024-04-04 12:12:01,984 - SMU - Measure: Ch0, V=2.0000V, I=-0.0000A, R=-38799770.2219Ohm, P=-0.0000W: mode=VDC
+2024-04-04 12:12:02,066 - SMU - Measure: Ch1, V=2.0000V, I=-0.0000A, R=-16754196.7882Ohm, P=-0.0000W: mode=IDC
+2024-04-04 12:12:02,067 - SMU - Output is tripped!
+2024-04-04 12:12:02,068 - SMU - Channel 0 was disabled
+2024-04-04 12:12:02,068 - SMU - Channel 1 was disabled
+2024-04-04 12:12:13,813 - Scope - Scope Object created
+2024-04-04 12:12:14,036 - Scope - Selftest passed
+2024-04-04 12:12:14,593 - Scope - Device reseted
+2024-04-04 12:12:14,593 - Scope - Scope Object created
+2024-04-04 12:12:14,851 - Scope - Selftest passed
+2024-04-04 12:12:20,482 - Scope - Device reseted
+2024-04-04 12:12:20,483 - SMU - SMU Object created
+2024-04-04 12:12:20,647 - SMU - Selftest passed

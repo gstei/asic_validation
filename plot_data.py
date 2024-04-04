@@ -1,9 +1,9 @@
 """
 This module contains the PlotData class for plotting data using Matplotlib.
 """
-
-import matplotlib.pyplot as plt
 import os
+import matplotlib.pyplot as plt
+
 
 
 
@@ -134,7 +134,8 @@ class PlotData:
             ax2.set_ylabel(self.y2_label, color=color)  # we already handled the x-label with ax1
             for i in range(len(self.y2)):
                 if max(abs(self.y2[i]))>0.001:
-                    ax2.plot(self.x2[i], self.y2[i], label=self.label2[i], color=colors[i+len(self.y)])
+                    ax2.plot(self.x2[i], self.y2[i], label=self.label2[i],
+                             color=colors[i+len(self.y)])
             ax2.tick_params(axis='y', labelcolor=color)
             ax2.grid(True)
             plt.title(self.title)
@@ -142,7 +143,8 @@ class PlotData:
             fig.tight_layout()  # otherwise the right y-label is slightly clipped
             fig.set_figheight(9*2/3)
             fig.set_figwidth(16*2/3)
-            
+
             current_directory = os.getcwd()
             plt.savefig(f'{current_directory}\\images\\{self.title}.png', dpi=300)
+            plt.close()
             # plt.show()

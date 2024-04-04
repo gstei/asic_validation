@@ -4,10 +4,15 @@
 import sqlite3
 import pickle
 from enum import Enum
-from PlotData import *
 import matplotlib.pyplot as plt
+from plot_data import *
+
+
+from enum import Enum
 
 class MeasurementField(Enum):
+    """Represents the different measurement fields in the database."""
+
     CHIP_ID = "chip_id"
     MEASUREMENT_TYPE = "measurement_type"
     MEASUREMENT_PARAMETER1 = "measurement_parameter1"
@@ -44,10 +49,10 @@ class Database:
         It ensures that the database connection is properly closed to avoid resource leaks.
 
         Note:
-        - It is generally recommended to explicitly close the database connection 
+        - It is generally recommended to explicitly close the database connection
             using the `close()` method
             instead of relying solely on the `__del__` method.
-        - The `__del__` method is not guaranteed to be called in all cases, 
+        - The `__del__` method is not guaranteed to be called in all cases,
             so it should not be relied upon
             as the sole means of closing resources.
         """
@@ -79,7 +84,8 @@ class Database:
              measurement_result TEXT,
              time_stamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
 
-    def insert(self, chip_id, measurement_type, measurements_data, measurement_result, measurement_parameter1="", measurement_parameter2="", measurement_temperature=22.0):
+    def insert(self, chip_id, measurement_type, measurements_data, measurement_result,
+               measurement_parameter1="", measurement_parameter2="", measurement_temperature=22.0):
         """
         Inserts a new measurement into the database.
 
@@ -96,8 +102,11 @@ class Database:
             None
         """
         self.cur.execute("INSERT INTO measurements (chip_id, measurement_type, measurement_data," +
-                         " measurement_result, measurement_parameter1, measurement_parameter2, measurement_temperature) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                         (chip_id, measurement_type, pickle.dumps(measurements_data), measurement_result, measurement_parameter1, measurement_parameter2, measurement_temperature))
+                         " measurement_result, measurement_parameter1, measurement_parameter2, "+
+                         "measurement_temperature) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                         (chip_id, measurement_type, pickle.dumps(measurements_data),
+                          measurement_result, measurement_parameter1, measurement_parameter2,
+                          measurement_temperature))
         self.con.commit()
 
     def read(self):
@@ -249,15 +258,18 @@ class Database:
         # self.cur.execute("SELECT * FROM measurements ORDER BY time_stamp DESC LIMIT ?", (n,))
         # rows = self.cur.fetchall()
         measurement_type = "normal startup"
-        self.cur.execute("SELECT * FROM measurements WHERE measurement_type = ? ORDER BY time_stamp DESC LIMIT ?", (measurement_type, n))
+        self.cur.execute("SELECT * FROM measurements WHERE measurement_type = ? ORDER BY "+
+                         "time_stamp DESC LIMIT ?", (measurement_type, n))
         rows = self.cur.fetchall()
 
         # Unpack the pickled data and create a plot
         for row in rows:
-            index, chip_id, measurement_type, measurement_parameter1, measurement_parameter2, measurement_temperature, measurement_data, measurement_result, _ = row
+            index, chip_id, measurement_type, measurement_parameter1, measurement_parameter2, \
+            measurement_temperature, measurement_data, measurement_result, _ = row
             measurement_data = pickle.loads(measurement_data)
             if hasattr(measurement_data, 'efficiency'):
-                plt.scatter(measurement_data.out_current, measurement_data.efficiency, label=measurement_data.title)
+                plt.scatter(measurement_data.out_current, measurement_data.efficiency,
+                            label=measurement_data.title)
             else:
                 print("Efficiency does not exist in measurement_data")
         plt.legend()
@@ -278,7 +290,8 @@ class Database:
         - measurement_parameter2
         - measurement_temperature
 
-        Only the entry with the highest 'id' value is kept for each unique combination of the above criteria.
+        Only the entry with the highest 'id' value is kept for each unique combination of the
+        above criteria.
 
         Returns:
             None
@@ -288,7 +301,8 @@ class Database:
             WHERE id NOT IN (
                 SELECT MAX(id)
                 FROM measurements
-                GROUP BY chip_id, measurement_type, measurement_parameter1, measurement_parameter2, measurement_temperature
+                GROUP BY chip_id, measurement_type, measurement_parameter1,
+                measurement_parameter2, measurement_temperature
             )
         """)
         self.con.commit()
@@ -310,7 +324,8 @@ class Database:
 
     def plot_measurement_data(self, id_to_select):
         """
-        Loads the measurement_data of a specific entry from the database and calls the PlotData() method.
+        Loads the measurement_data of a specific entry from the database and calls the
+        PlotData() method.
 
         Args:
             id_to_select (int): The ID of the entry to select.
@@ -323,7 +338,7 @@ class Database:
         if measurement_data is not None:
             measurement_data = pickle.loads(measurement_data)
             measurement_data.plot_all_data()
-    
+
     def get_newest_unique_measurement_ids(self):
         """
         Retrieves the IDs of the newest unique measurements from the database.
@@ -334,17 +349,20 @@ class Database:
         self.cur.execute("""
             SELECT MAX(id)
             FROM measurements
-            GROUP BY chip_id, measurement_type, measurement_parameter1, measurement_parameter2, measurement_temperature
+            GROUP BY chip_id, measurement_type, measurement_parameter1, measurement_parameter2,
+            measurement_temperature
         """)
         ids = [row[0] for row in self.cur.fetchall()]
         return ids
 if __name__ == "__main__":
     database = Database("measurements")
-    ids = database.get_newest_unique_measurement_ids()
-    for id_to_select in ids:
-        database.plot_measurement_data(id_to_select)
-    database.print_table()
+    if 0: 
+        ids = database.get_newest_unique_measurement_ids()
+        for id_to_select in ids:
+            database.plot_measurement_data(id_to_select)
+    # database.print_table()
     database.plot_efficiency(9)
+    print("ok")
     # db=Database("test")
     # db.print_table()
     # db.insert("test", [1,2,3,4,5], "Failed")

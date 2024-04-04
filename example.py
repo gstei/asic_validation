@@ -1,8 +1,14 @@
+"""Simple example how to use the SMU, Power supply, Oscilloscope and Signal generator
+"""
+
 import time
 import matplotlib
 import matplotlib.pyplot as plt
 
 import numpy as np
+import logging
+
+import plot_data
 # import SMU drivers
 from Drivers.pxie_4141_main.PXIe4141 import PXIe4141
 # import Power supply drivers
@@ -13,11 +19,8 @@ import niscope
 # import Signal generator
 from Drivers.pxi_5402_main.PXI_5402 import PXI_5402
 
-import nitclk
 
-import logging
 
-import PlotData
 
 logger = logging.getLogger('') # Logger is labled as root
 logger.setLevel(logging.INFO)
@@ -122,8 +125,11 @@ if 1:
         voltage=1
         with niscope.Session(resource_name=resource_name, options=options) as session:
             session.configure_vertical(range=voltage, coupling=niscope.VerticalCoupling.AC)
-            session.configure_chan_characteristics(input_impedance=1000000.0, max_input_frequency=100e3) #self.NISCOPE_VAL_20MHZ_MAX_INPUT_FREQUENCY
-            session.configure_horizontal_timing(min_sample_rate=1e4, min_num_pts=length, ref_position=0.0, num_records=1, enforce_realtime=True)
+            session.configure_chan_characteristics(input_impedance=1000000.0,
+                                                   max_input_frequency=100e3) #self.NISCOPE_VAL_20MHZ_MAX_INPUT_FREQUENCY
+            session.configure_horizontal_timing(min_sample_rate=1e4, min_num_pts=length,
+                                                ref_position=0.0, num_records=1,
+                                                enforce_realtime=True)
             waveforms = session.channels[channels].read(num_samples=length)
             for i in range(len(waveforms)):
                 print('Waveform {0} information:'.format(i))
@@ -157,8 +163,8 @@ if 1:
         print("SMU does not work")
 
     # Get some data from the Oscilloscope
-    PlotData = PXI_5142.get_data(sc0,sc1)
-    PlotData.plot_all_data()
+    plot_data = PXI_5142.get_data(sc0,sc1)
+    plot_data.plot_all_data()
     plt.close()
 
 

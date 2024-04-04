@@ -16,7 +16,7 @@ import numpy as np
 import math
 import hightime
 import time
-from PlotData import PlotData
+from plot_data import PlotData
 
 class PXI_5142:
     
