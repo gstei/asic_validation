@@ -93,7 +93,7 @@ class PlotData:
         self.y2.append(y_data)
         self.label2.append(label)
 
-    def plot_all_data(self):
+    def plot_all_data(self, plot_type='png', y1_min=None, y1_max=None, x1_min=None, x1_max=None, y2_min=None, y2_max=None, x2_min=None, x2_max=None):
         """
         Plots all the data in the object when the values are larger than 0.05.
 
@@ -123,6 +123,10 @@ class PlotData:
             color = 'tab:red'
             ax1.set_xlabel(self.x_label)
             ax1.set_ylabel(self.y_label, color=color)
+            #set axis range
+            if y1_min is not None and y1_max is not None and x1_min is not None and x1_max is not None:
+                ax1.set_ylim([y1_min, y1_max])
+                ax1.set_xlim([x1_min, x1_max])
             #only plot if data makes sense
             for i in range(len(self.y)):
                 if max(abs(self.y[i]))>0.02:
@@ -138,6 +142,10 @@ class PlotData:
                              color=colors[i+len(self.y)])
             ax2.tick_params(axis='y', labelcolor=color)
             ax2.grid(True)
+            #set axis range
+            if y2_min is not None and y2_max is not None and x2_min is not None and x2_max is not None:
+                ax2.set_ylim([y2_min, y2_max])
+                ax2.set_xlim([x2_min, x2_max])
             plt.title(self.title)
             fig.legend()
             fig.tight_layout()  # otherwise the right y-label is slightly clipped
@@ -145,6 +153,12 @@ class PlotData:
             fig.set_figwidth(16*2/3)
 
             current_directory = os.getcwd()
-            plt.savefig(f'{current_directory}\\images\\{self.title}.png', dpi=300)
+            if plot_type == 'png':
+                plt.savefig(f'{current_directory}\\images\\{self.title}.png', dpi=300)
+            elif plot_type == 'pdf':  
+                plt.savefig(f'{current_directory}\\images\\{self.title}.pdf', dpi=300)
+            else:
+                print("No such plot type")
+                return()
             plt.close()
             # plt.show()

@@ -2,10 +2,11 @@
 """
 
 import sqlite3
+import os
 import pickle
 from enum import Enum
 import matplotlib.pyplot as plt
-from plot_data import *
+from plot_data import PlotData
 
 
 from enum import Enum
@@ -278,6 +279,8 @@ class Database:
         plt.ylabel("Efficiency (%)")
         plt.title(f"Efficiency vs Output Current for {chip_id}")
         plt.tight_layout()
+        current_directory = os.getcwd()
+        plt.savefig(f'{current_directory}\\images\\efficiency{chip_id}.pdf', dpi=300)
         plt.show()
     def delete_duplicate_entries(self):
         """
@@ -321,8 +324,20 @@ class Database:
         self.cur.execute(f"SELECT DISTINCT {field_name} FROM measurements")
         entries = [row[0] for row in self.cur.fetchall()]
         return entries
+    def get_plot_data_from_pickle(self, measurement_data) -> PlotData:
+        """
+        Retrieves plot data from a pickle object.
 
-    def plot_measurement_data(self, id_to_select):
+        Parameters:
+            measurement_data (bytes): The pickle object containing the measurement data.
+
+        Returns:
+            PlotData: The deserialized plot data.
+
+        """
+        return pickle.loads(measurement_data)
+
+    def plot_measurement_data(self, id_to_select, plot_type='png'):
         """
         Loads the measurement_data of a specific entry from the database and calls the
         PlotData() method.
@@ -336,8 +351,8 @@ class Database:
         measurement_data = PlotData()
         measurement_data = self.select_field_by_id(id_to_select)
         if measurement_data is not None:
-            measurement_data = pickle.loads(measurement_data)
-            measurement_data.plot_all_data()
+            measurement_data = self.get_plot_data_from_pickle(measurement_data)
+            measurement_data.plot_all_data(plot_type=plot_type)
 
     def get_newest_unique_measurement_ids(self):
         """
@@ -354,14 +369,49 @@ class Database:
         """)
         ids = [row[0] for row in self.cur.fetchall()]
         return ids
+
+    #The following method is not implemented yet
+    def get_ids_groups_with_same_measurement_type(self):
+        """_summary_
+        """
+        ids_list = []
+        database.cur.execute("""SELECT measurement_type, measurement_parameter1, 
+                             measurement_parameter2, COUNT(*) FROM measurements GROUP BY 
+                             measurement_type, measurement_parameter1, measurement_parameter2 
+                             HAVING COUNT(*) > 1""")
+        rows=database.cur.fetchall()
+        for row in rows:
+            database.cur.execute("""SELECT id FROM measurements WHERE measurement_type = ? 
+                                 AND measurement_parameter1 = ? AND measurement_parameter2 = ?""", 
+                                 (row[0], row[1], row[2]))
+            rows2=database.cur.fetchall()
+            simple_list = [item[0] for item in rows2]
+            ids_list.append(simple_list)
+        values=[]
+        for ids in ids_list:
+            for id in ids:
+                measurement_data = self.select_field_by_id(id)
+                if measurement_data is not None:
+                    measurement_data = self.get_plot_data_from_pickle(measurement_data)
+                    value=[max(measurement_data.y[0].max(),measurement_data.y[1].max()), 
+                           min(measurement_data.y[0].min(),measurement_data.y[1].min())]
+
+            values.append(value)
+            
+        
+    
+    
+    
 if __name__ == "__main__":
     database = Database("measurements")
+    # database.get_ids_groups_with_same_measurement_type()
     if 0: 
         ids = database.get_newest_unique_measurement_ids()
         for id_to_select in ids:
-            database.plot_measurement_data(id_to_select)
-    # database.print_table()
+            database.plot_measurement_data(id_to_select, plot_type="pdf")
+    database.print_table()
     database.plot_efficiency(9)
+
     print("ok")
     # db=Database("test")
     # db.print_table()
