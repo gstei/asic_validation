@@ -13,6 +13,11 @@ For the installation install the following drivers [https://ftdichip.com/drivers
 ## Instruction
 
 The USB to MPSSE Serial cable 3.3V -0.5m can be connected according to the following way:
+In our case 
+- SPI clock to orange cable
+- SPI Chip Select to brown cable
+- SPI Master Out to yellow cable
+- SPI Master In to green cable
 ![alt text](image.png)
 
 
