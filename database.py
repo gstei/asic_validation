@@ -375,14 +375,14 @@ class Database:
         """_summary_
         """
         ids_list = []
-        database.cur.execute("""SELECT measurement_type, measurement_parameter1, 
-                             measurement_parameter2, COUNT(*) FROM measurements GROUP BY 
-                             measurement_type, measurement_parameter1, measurement_parameter2 
+        database.cur.execute("""SELECT measurement_type, measurement_parameter1,
+                             measurement_parameter2, COUNT(*) FROM measurements GROUP BY
+                             measurement_type, measurement_parameter1, measurement_parameter2
                              HAVING COUNT(*) > 1""")
         rows=database.cur.fetchall()
         for row in rows:
-            database.cur.execute("""SELECT id FROM measurements WHERE measurement_type = ? 
-                                 AND measurement_parameter1 = ? AND measurement_parameter2 = ?""", 
+            database.cur.execute("""SELECT id FROM measurements WHERE measurement_type = ?
+                                 AND measurement_parameter1 = ? AND measurement_parameter2 = ?""",
                                  (row[0], row[1], row[2]))
             rows2=database.cur.fetchall()
             simple_list = [item[0] for item in rows2]
@@ -393,19 +393,19 @@ class Database:
                 measurement_data = self.select_field_by_id(id)
                 if measurement_data is not None:
                     measurement_data = self.get_plot_data_from_pickle(measurement_data)
-                    value=[max(measurement_data.y[0].max(),measurement_data.y[1].max()), 
+                    value=[max(measurement_data.y[0].max(),measurement_data.y[1].max()),
                            min(measurement_data.y[0].min(),measurement_data.y[1].min())]
 
             values.append(value)
-            
-        
-    
-    
-    
+
+
+
+
+
 if __name__ == "__main__":
     database = Database("measurements")
     # database.get_ids_groups_with_same_measurement_type()
-    if 0: 
+    if 0:
         ids = database.get_newest_unique_measurement_ids()
         for id_to_select in ids:
             database.plot_measurement_data(id_to_select, plot_type="pdf")

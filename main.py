@@ -21,6 +21,8 @@ from Drivers.e3631a_main.E3631A import E3631A
 from Drivers.pxi_6363_main.GPIO import GPIOController
 # import elefant
 from Drivers.tp04300a_main.python.TP04300 import TP04300
+# import the SPI class
+from Drivers.FTDI.ftdi_spi import FtdiSpi
 # import Database
 from database import Database
 
@@ -64,6 +66,8 @@ def main():
     # Create gpio controller
     gpio = GPIOController()
     power_sup = E3631A(address=5)
+    spi=FtdiSpi()
+    spi.configure()
 
     # Create database
     database = Database("measurements")
