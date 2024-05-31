@@ -135,6 +135,25 @@ def main():
                     database.insert(f"{chip_id}", "reset while powered", dcdc, "Passed",
                                     f"{voltage}V", resistor,
                                     measurement_temperature=measurement_temperature)
+    # Bandgap test
+    if True:
+        voltage=[]
+        input("Connect SMU0 to the output of Analog testpin and press enter\n")
+        smu0.set_aperture(0, 0.001, 2)
+        smu0.configure_channel_idc(0, 0.002, 0.001, -2, 2)
+        smu0.enable(0, True)
+        for measurement_temperature in range(0,71):
+            tp04300_obj.headDown(True)
+            tp04300_obj.flow(True)
+            tp04300_obj.setPointAndWait(measurement_temperature, ploton)
+            
+            print(f"voltage was: {smu0.measure(0)[0]}V")
+            voltage.append(smu0.measure(0)[0])
+        smu0.enable(0, False)
+        database.insert(f"{chip_id}", "bandgap", voltage, "Passed",
+                                    " ", " ",
+                                    measurement_temperature=measurement_temperature)
+            
     tp04300_obj.flow(False)
     #TP04300_obj.headLock(False)
     tp04300_obj.headDown(False)

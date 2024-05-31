@@ -167,7 +167,7 @@ class FtdiSpi:
         self.write2(address<<1 | 0x0)
         return self.write2(address<<1 | 0x0)
 
-    def configure_analog_mux(self, spi, analog_mux=AnalogMux.GROUND):
+    def configure_analog_mux(self, analog_mux=AnalogMux.GROUND):
         """
         Configures the analog mux to the specified value.
 
@@ -177,9 +177,9 @@ class FtdiSpi:
 
         """
         # We want to write register two, so we need to set the address to 2
-        spi.write2(2 << 1 | 0x1)
-        spi.write2(analog_mux << 1 | 0x1)
-    def current_limit_tune(self, spi, current_limit:int, enable:bool = True):
+        self.write2(2 << 1 | 0x1)
+        self.write2(analog_mux.value << 1 | 0x1)
+    def current_limit_tune(self, current_limit:int, enable:bool = True):
         """
         Adjusts the current limit for the SPI communication.
 
@@ -197,8 +197,8 @@ class FtdiSpi:
         """
         if current_limit > 7:
             raise ValueError("Current limit should be between 0 and 7")
-        spi.write2(3 << 1 | 0x1)
-        spi.write2(current_limit << 2 | enable << 1 |  0x1)
+        self.write2(3 << 1 | 0x1)
+        self.write2(current_limit << 2 | enable << 1 |  0x1)
     def voltage_fb(self, spi, voltage_fb:bool=False):
         """
         Sets the voltage feedback value.
@@ -272,6 +272,31 @@ class FtdiSpi:
         """
         self.slave.write(data=address)
         return self.slave.read(1)[0]
+    def output_bandgap(self):
+        """
+        Outputs the bandgap voltage.
+
+        """
+        self.write2(0x3<<1 | 0x1)
+        time.sleep(0.2)
+        self.write2(0x2)
+    def output_cur_ref(self):
+        """
+        Outputs the bandgap voltage.
+
+        """
+        self.write2(0x3<<1 | 0x1)
+        time.sleep(0.2)
+        self.write2(0x1)
+    def output_ground(self):
+        """
+        Outputs the bandgap voltage.
+
+        """
+        self.write2(0x3<<1 | 0x1)
+        time.sleep(0.2)
+        self.write2(0x0)
+    
 
 if __name__ == "__main__":
     ftdi_spi = FtdiSpi()
