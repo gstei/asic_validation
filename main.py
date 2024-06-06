@@ -71,14 +71,15 @@ def main():
 
     # Create database
     database = Database("measurements")
-    chip_id= "TI"
+    chip_id= "g_2"
     temperature=[0, 25, 70]
+    resistors=['R1', 'R2', 'R3']
     for measurement_temperature in temperature:
         tp04300_obj.headDown(True)
         tp04300_obj.flow(True)
         tp04300_obj.setPointAndWait(measurement_temperature, ploton)
         if 1: #normal startup test (no reset active)
-            resistor_values = ['R1', 'R2', 'R3', 'R4']
+            resistor_values = resistors
             voltages = [4.3, 5, 5.5]
             for voltage in voltages:
                 for resistor in resistor_values:
@@ -89,7 +90,7 @@ def main():
                     database.insert(f"{chip_id}", "normal startup", dcdc, "Passed", f"{voltage}V",
                                     resistor, measurement_temperature=measurement_temperature)
         if 1: #reset startup test (reset active and then released)
-            resistor_values = ['R1', 'R2', 'R3', 'R4']
+            resistor_values = resistors
             voltages = [4.3, 5, 5.5]
             for voltage in voltages:
                 for resistor in resistor_values:
@@ -113,7 +114,7 @@ def main():
                                     f"{step[0]}V to {step[1]}V", resistor,
                                     measurement_temperature=measurement_temperature)
         if 1: #load step test (change load resistance up and down and measure output voltage)
-            resistor_values = ['R2', 'R3', 'R4']
+            resistor_values = resistors[1:]
             voltages = [4.3, 5, 5.5]
             for voltage in voltages:
                 for resistor in resistor_values:
@@ -136,7 +137,7 @@ def main():
                                     f"{voltage}V", resistor,
                                     measurement_temperature=measurement_temperature)
     # Bandgap test
-    if True:
+    if False:
         voltage=[]
         input("Connect SMU0 to the output of Analog testpin and press enter\n")
         smu0.set_aperture(0, 0.001, 2)
@@ -158,7 +159,7 @@ def main():
     #TP04300_obj.headLock(False)
     tp04300_obj.headDown(False)
     tp04300_obj.close_com()
-    database.delete_measurement_before("2024-03-22 15:27:21")
+    # database.delete_measurement_before("2024-03-22 15:27:21")
     database.print_table()
 
 if __name__ == "__main__":
