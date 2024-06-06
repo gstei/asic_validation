@@ -24,21 +24,21 @@ import pickle
 
 NORMAL_MODE=False
 
-class DcDcConverterBandgapVoltage:
+class DcDcConverterRefCurrent:
     """
     Class for performing load tests on a DC-DC converter.
     """
     def __init__(self):
         print("init")
-
+    
     @staticmethod
-    def get_bandgap_voltage(power_sup: E3631A, smu0: PXIe4141, spi: FtdiSpi, voltage=5):
+    def get_ref_current(power_sup: E3631A, smu0: PXIe4141, spi: FtdiSpi, voltage=5):
         # Power chip
         power_sup.set_P25V(voltage, 0.4)
         time.sleep(0.1)
         power_sup.en_output(True)
         time.sleep(0.3)
-        spi.output_bandgap()
+        spi.output_cur_ref()
         smu0.configure_channel_idc(0, 0.000002, 0.000, -6, 6)
         smu0.enable(0, True)
         time.sleep(0.1)
@@ -96,21 +96,21 @@ if __name__ == "__main__":
         tp04300_obj.flow(True)
         tp04300_obj.setPointAndWait(measurement_temperature, ploton)
         for input_voltage in input_voltages:
-            voltages[str(input_voltage)].append(DcDcConverterBandgapVoltage.get_bandgap_voltage(power_sup, smu0, spi, input_voltage))
+            voltages[str(input_voltage)].append(DcDcConverterRefCurrent.get_ref_current(power_sup, smu0, spi, input_voltage)*10*10e-6)
             temperatures[str(input_voltage)].append(measurement_temperature)
     tp04300_obj.flow(False)
     tp04300_obj.headDown(False)
     current_directory = os.getcwd()
-    with open(f'{current_directory}\\images\\01_Bandgap\\bandgap_voltage_vs_temperature.pkl', "wb") as f:
+    with open(f'{current_directory}\\images\\02_Ref_current\\ref_current_vs_temperature.pkl', "wb") as f:
         pickle.dump((temperatures, voltages), f)
     for input_voltage in input_voltages:
         plt.plot(temperatures[str(input_voltage)], voltages[str(input_voltage)], label=f"{input_voltage}V input voltage")
     plt.xlabel("Temperature [°C]")
-    plt.ylabel("Bandgap voltage [V]")
-    plt.title("Bandgap voltage vs temperature")
+    plt.ylabel("Reference current [A]")
+    plt.title("Reference current vs temperature")
     plt.legend()
 
-    plt.savefig(f'{current_directory}\\images\\01_Bandgap\\{"Bandgap"}.png', dpi=300)
+    plt.savefig(f'{current_directory}\\images\\02_Ref_current\\{"Current"}.png', dpi=300)
     plt.show()
     # safe data as pickle
     

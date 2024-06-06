@@ -40,7 +40,7 @@ class DcDcConverterStartupTest:
             smu0.set_all_smu_outputs_to_voltage(output_voltage)
         else:
             time.sleep(0.2)
-            power_sup.set_P25V(output_voltage, 0.4)
+            power_sup.set_P25V(output_voltage, 1)
             time.sleep(0.1)
             power_sup.en_output(True)
         time.sleep(0.1)

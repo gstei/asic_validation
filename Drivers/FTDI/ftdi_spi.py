@@ -177,7 +177,7 @@ class FtdiSpi:
 
         """
         # We want to write register two, so we need to set the address to 2
-        self.write2(2 << 1 | 0x1)
+        self.write2(3 << 1 | 0x1)
         self.write2(analog_mux.value << 1 | 0x1)
     def current_limit_tune(self, current_limit:int, enable:bool = True):
         """
@@ -197,7 +197,7 @@ class FtdiSpi:
         """
         if current_limit > 7:
             raise ValueError("Current limit should be between 0 and 7")
-        self.write2(3 << 1 | 0x1)
+        self.write2(4 << 1 | 0x1)
         self.write2(current_limit << 2 | enable << 1 |  0x1)
     def voltage_fb(self, spi, voltage_fb:bool=False):
         """
@@ -210,7 +210,7 @@ class FtdiSpi:
         Returns:
         None
         """
-        spi.write2(4 << 1 | 0x1)
+        spi.write2(5 << 1 | 0x1)
         spi.write2(voltage_fb << 1 | 0x1)
     def freq_tune_digital(self, spi, freq:int, enable:bool = True):
         """
@@ -227,7 +227,7 @@ class FtdiSpi:
         """
         if freq > 7:
             raise ValueError("Frequency tune should be between 0 and 7")
-        spi.write2(5 << 1 | 0x1)
+        spi.write2(6 << 1 | 0x1)
         spi.write2(enable << 7 | freq << 1 | 0x1)
     def freq_tune_analog(self, spi, freq:int):
         """
@@ -242,7 +242,7 @@ class FtdiSpi:
         """
         if freq > 7:
             raise ValueError("Frequency tune should be between 0 and 7")
-        spi.write2(6 << 1 | 0x1)
+        spi.write2(7 << 1 | 0x1)
         spi.write2(freq << 1 | 0x1)
     def close(self):
         """
