@@ -3,3 +3,4 @@
 *.db
 images/*.png
 images/*.pdf
+!images/01_Bandgap/*
